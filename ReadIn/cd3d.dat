@@ -1,0 +1,385 @@
+======================================================================
+#       input file for MooN_MD
+======================================================================
+VERSION:        1
+GEOFILE:        ../../ParMooN/data/urea_210.GEO
+BNDFILE:        ../../ParMooN/data/urea_210.PRM
+GEOFILE:        ../../ParMooN/data/Wuerfel.GEO
+BNDFILE:        ../../ParMooN/data/Wuerfel.PRM
+#GEOFILE:        ../../ParMooN/data/Circle1.GEO
+#GEOFILE:        ../../ParMooN/data/circle3.GEO
+#BNDFILE:        ../../ParMooN/data/Circle2.PRM
+#BNDFILE:        ../../ParMooN/data/UnitSquare.PRM
+#GEOFILE:        ../../ParMooN/data/TwoTriangles.GEO
+
+#BNDFILE:        ../../ParMooN/data/Sphere.PRM
+#GEOFILE:        ../../ParMooN/data/Sphere.GEO 
+
+#SMESHFILE:       ../../ParMooN/data/medit/terahertz3.mesh
+#SMESHFILE:       ../../ParMooN/data/medit/brain.mesh
+#SMESHFILE:       ../../ParMooN/data/smesh/SphereCoarse.smesh
+
+
+LOGFILE:     logfile
+OUTFILE:      cd3d_Direct_local.out
+BASENAME: sph
+OUTPUTDIR: VTK
+WRITE_PS: 0
+WRITE_GRAPE: 0
+WRITE_GNU: 0
+WRITE_GMV: 0
+WRITE_VTK: 1
+MEASURE_ERRORS: 1
+ESTIMATE_ERRORS: 0
+READ_GRAPE_FILE: 0
+READGRAPEBASENAME: PBS_Urea
+SAVE_DATA: 0
+SAVE_DATA_FILENAME: DATA_TMP/testurea_gal_210.dt01.exp30ml.lap0.aggr.wout.nuc.
+READ_DATA: 2
+READ_DATA_FILENAME: INITIALS/urea_gal_210.dt01.exp30ml.lap0
+----------------------------------------------------------------------
+# agglomeration and nucleation:0
+# only nucleation: 1
+# only agglomeration: 2
+----------------------------------------------------------------------
+UREA_MODEL: 0
+
+DRIFT_Z: 1
+----------------------------------------------------------------------
+# order of ansatz space (=k)
+#   i.e. P_k on triangles
+#        Q_k on quadrangles
+----------------------------------------------------------------------
+VELOCITY_SPACE:  12
+ANSATZ_ORDER: 2
+TEST_ORDER: 1
+P9: 2
+
+LP_STREAMLINE_COEFF: 0.001
+LP_STREAMLINE_EXPONENT: 1
+LP_STREAMLINE_ORDER_DIFFERENCE: 1
+----------------------------------------------------------------------
+# Reynolds number eps=1/RE_NR
+----------------------------------------------------------------------
+RE_NR: 1.649076 
+RE_NR: 0.3938510
+
+START_RE_NR: 100
+RE_NR_INCREMENT: 5
+STOKES_PROBLEM: 0
+
+----------------------------------------------------------------------
+# maximum number of levels
+----------------------------------------------------------------------
+LEVELS: 4
+
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 1
+REACTOR_P11: 16
+----------------------------------------------------------------------
+# refinement strategy
+#   0 - uniform refinement
+#   1 - gradient indicator
+#   2 - error estimator
+----------------------------------------------------------------------
+REFINEMENT: 0
+
+----------------------------------------------------------------------
+# type of discretization: 
+#    1 - GALERKIN
+#    2 - SDFEM
+#    3 - UPWIND
+#    4 - Smagorinsky LES
+----------------------------------------------------------------------
+DISCTYPE:  1
+NSTYPE: 1
+USE_ISOPARAMETRIC: 0
+LAPLACETYPE: 0
+VMS_LARGE_VELOCITY_SPACE: 17
+VMS_ADAPT_LOWER: 0.5
+VMS_ADAPT_MIDDLE: 1.1
+VMS_ADAPT_UPPER: 2
+VMS_ADAPT_STEPS: 1
+
+FILTER_WIDTH_CONSTANT: 1
+FILTER_WIDTH_POWER: 1
+
+TURBULENT_VISCOSITY_TYPE: 1
+TURBULENT_VISCOSITY_TENSOR: 0
+TURBULENT_VISCOSITY_CONSTANT: 0.01
+TURBULENT_VISCOSITY_POWER: 3
+TURBULENT_VISCOSITY_SIGMA: 2
+CONVOLUTE_SOLUTION: 0
+
+----------------------------------------------------------------------
+# order of upwind scheme
+#    0 - sharp upwind
+#    1 - Samarskij upwind
+----------------------------------------------------------------------
+UPWIND_ORDER: 1
+
+----------------------------------------------------------------------
+# factors for SDFEM (delta_K=h_K*DELTAi)
+#   DELTA0 for high Peclet number
+#   DELTA1 for low Peclet number
+----------------------------------------------------------------------
+DELTA0:  1.0
+DELTA1:  0.00
+
+----------------------------------------------------------------------
+# paramters for individual use
+# P0: initia T_0, reference value (K)
+# P1: alpha, absorption coeff
+# P2: P, transmitted power
+# P3: a, radius of beam
+# P4: char length
+# P5: k0
+# P6: heat stress number (or) BIOT NUMBER
+----------------------------------------------------------------------
+P0: 0
+P1: 2.4067e4
+P2: 1e-3
+P3: 0.25e-3
+P4: 2.50e-4
+P5: 0.6064
+P6: 1 
+
+P7: 7.657682
+P7: 32.06315
+P8: 0.0
+
+  
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+# Par_P0: Output rank number
+# Par_P1: root taking part in computation or not
+#Par_P2: mateis partition type (0/1)
+#Par_P3: 1 - with Halo cells, 0 - withot Halo cells
+#Par_P4: ( 0 smallest / 1 largest) rank contains the SubDomain Dof
+
+Par_P0: 0
+Par_P1: 0
+Par_P2: 0
+Par_P3: 1
+Par_P4: 0
+Par_P5: 0
+Par_P8: 0
+----------------------------------------------------------------------
+#REACTOR_P0: Peclet number for heat
+#REACTOR_P1: Peclet number for conc
+#REACTOR_P2: Peclet number for pbe physical space
+#REACTOR_P3: Peclet number for pbe intl
+#REACTOR_P4: No. linearization steps PBE/C
+#REACTOR_P5: PBE w.r.t nodalpoints(0) quadpoints(1)
+
+# REACTOR_P11: No. cells in 1D internal domain
+# REACTOR_P12: starting point of internal domain
+# REACTOR_P13: end point of internal domain
+# REACTOR_P14: SIMPATURS Number of RefineallxDirection()
+# REACTOR_P15: (=1) SUPG for internal direction
+# REACTOR_P16: artificial doffision coeff D_L value
+# REACTOR_P17: delta0 in internal SUPG
+# REACTOR_P18: delta1 in internal SUPG
+
+#REACTOR_P21: L_Infty (m) 
+#REACTOR_P22: U_Infty (m/s)
+#REACTOR_P23: T_Inlet and T_Infty (K)
+#REACTOR_P24: T_Wall (K)
+#REACTOR_P25: C_In/C_Infty (Kg/m^3)
+#REACTOR_P26: growth constant for conc
+#REACTOR_P27: growth constant for PBE
+#REACTOR_P28: define PBSConstT
+#REACTOR_P29: used to store internal level pos for VTK output
+#REACTOR_P30: delta t = pow(h, REACTOR_P30) 
+----------------------------------------------------------------------
+REACTOR_P0: 1
+REACTOR_P1: 1
+REACTOR_P2: 1
+REACTOR_P3: 1
+
+REACTOR_P4: 1
+REACTOR_P5: 0
+
+REACTOR_P12: 0.
+REACTOR_P13: 1.
+REACTOR_P14: 0
+REACTOR_P15: 0
+REACTOR_P16: 0
+REACTOR_P17: 0
+REACTOR_P18: 0
+
+
+REACTOR_P21: 2.e-4
+REACTOR_P22: 1.0e-1
+REACTOR_P23: 301.15
+REACTOR_P24: 292.15
+REACTOR_P25: 71.9
+REACTOR_P26: 0.0000289
+REACTOR_P27: 0.0001
+REACTOR_P28: 2.
+REACTOR_P29: 0
+----------------------------------------------------------------------
+# paramters for population balance Eqn use
+# PBE_P0: 0 no growth, no aggr, no break
+#         1 only growth
+#         2 only aggr
+#         3 only break
+#         4 growth + aggr
+#         5 aggr + break
+#         6 growth + aggr + break
+# PBE_P1:
+# PBE_P2:
+# PBE_P3:
+# PBE_P4:
+# PBE_P5:
+# PBE_P6:
+# PBE_P7:
+# PBE_P8:
+----------------------------------------------------------------------
+PBE_P0: 0
+PBE_P1: 0
+PBE_P2: 0
+PBE_P3: 0
+PBE_P4: 0
+PBE_P5: 0
+PBE_P6: 0
+PBE_P7: 0
+PBE_P8: 0
+PBE_P9: 0
+
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+# refinement strategy
+# ADAPTIVE_REFINEMENT_CRITERION
+#              0 - gradient indicator
+#              1 - residual error estimator for H1-Norm
+#              2 - residual error estimator for L2-Norm
+#              3 - residual error estimator for Energy-Norm (quasi robust)
+
+# REFINE_STRATEGY  0 - compare with maximal local error
+                   1 - compare with fraction of global error
+----------------------------------------------------------------------
+GRID_TYPE: 3
+
+ERROR_CONTROL: 1
+ADAPTIVE_REFINEMENT_CRITERION: 2
+
+REFINE_STRATEGY: 0
+REFTOL: 0.5
+COARSETOL: 0.0  
+MIN_FRACTION_TO_CHANGE: 0.1
+DECREASE_REFTOL_FACTOR: 0.90909
+#INCREASE_COARSETOL_FACTOR: 1.1
+#FRACTION_OF_ERROR: 0.25
+MAX_CELL_LEVEL: 200
+--------------------------------------------------------------------------
+SOLVER_TYPE: 2
+
+SC_NONLIN_RES_NORM_MIN_SADDLE: 1e-6
+SC_NONLIN_MAXIT_SADDLE: 1
+SC_NONLIN_DAMP_FACTOR_SADDLE: 1
+
+SC_LIN_MAXIT_SADDLE: 5
+SC_LIN_RED_FACTOR_SADDLE: 1e-1
+SC_LIN_RES_NORM_MIN_SADDLE: 8e-9
+
+SC_MG_TYPE_SCALAR: 1
+SC_MG_CYCLE_SADDLE: 0
+SC_SMOOTHER_SADDLE: 2
+SC_PRE_SMOOTH_SADDLE: 1
+SC_POST_SMOOTH_SADDLE: 1
+SC_SMOOTH_DAMP_FACTOR_SADDLE: 1
+SC_SMOOTH_DAMP_FACTOR_FINE_SADDLE: 1
+SC_COARSEST_LEVEL_SADDLE: 1
+SC_FIRST_SOLUTION_LEVEL_SADDLE: 0
+SC_GMG_DAMP_FACTOR_SADDLE: 1
+SC_GMG_DAMP_FACTOR_FINE_SADDLE: 1
+SC_COARSE_SMOOTHER_SADDLE: 2
+SC_COARSE_MAXIT_SADDLE: 20
+SC_COARSE_RED_FACTOR_SADDLE: 1e-1
+SC_STEP_LENGTH_CONTROL_FINE_SADDLE: 0
+SC_STEP_LENGTH_CONTROL_ALL_SADDLE: 1
+SC_VERBOSE: 1
+
+----------------------------------------------------------------------
+SC_SOLVER: 16
+SC_PRECONDITIONER: 5
+SC_SOLVER_SCALAR: 11
+SC_PRECONDITIONER_SCALAR: 5
+SC_LIN_MAXIT_SCALAR: 100
+SC_LIN_RED_FACTOR_SCALAR: 0.0
+SC_LIN_RES_NORM_MIN_SCALAR: 1e-12
+SC_MINIT: 0
+SC_AMG_PREC_IT: 1
+#SC_AMG_PREC_RED_FACTOR:	
+# SC_EX_MAXIT:
+SC_GMRES_RESTART: 20
+SC_ILU_BETA: 0.0
+SC_MG_CYCLE_SCALAR: 1
+SC_SMOOTHER_SCALAR: 3
+SC_PRE_SMOOTH_SCALAR: 3
+SC_POST_SMOOTH_SCALAR: 3
+SC_SMOOTH_DAMP_FACTOR_SCALAR: 1.0
+SC_COARSE_SMOOTHER_SCALAR: 3
+SC_COARSE_MAXIT_SCALAR: 10
+SC_COARSE_RED_FACTOR_SCALAR: 0.1
+SC_STEP_LENGTH_CONTROL_FINE_SCALAR: 0
+SC_STEP_LENGTH_CONTROL_ALL_SCALAR: 0
+SC_OMEGA_0: 0.01
+# SC_SMOOTHER_RED_FACTOR:		
+SC_OMEGA_COARSE_0: 0.01
+#SC_OMEGA_P_0:
+SC_ILUT_TOL: 0.0001                     
+SC_ILUT_ABSOLUTE_FILLIN: 1             
+SC_ILUT_RELATIVE_FILLIN: 1.0           
+SC_ILUT_SORT: 1               
+SC_SCHUR_INV_OF_A: 5
+SC_SCHUR_INV_OF_A_MAXIT: 1
+SC_SCHUR_ITERATION_DAMP: 0.5
+SC_SCHUR_ITERATION_MAXIT: 10
+SC_SCHUR_STEP_LENGTH_CONTROL: 1
+SC_BRAESS_SARAZIN_MATRIX: 0
+SC_BRAESS_SARAZIN_ALPHA: 3
+SC_VERBOSE_AMG: 2
+CC_VERBOSE: 0
+
+----------------------------------------------------------------------
+# parameter for time discretization
+----------------------------------------------------------------------
+# time discretization
+# 0 - FORWARD_EULER
+# 1 - BACKWARD_EULER
+# 2 - CRANK_NICOLSON
+# 3 - FRACTIONAL_STEP
+----------------------------------------------------------------------
+TIME_DISC: 1
+STARTTIME: 0
+ENDTIME: 1000
+TIMESTEPLENGTH: 0.01
+RESET_CURRENTTIME: 0
+TIMESTEPLENGTH_TOL: 0.001
+TIMESTEPLENGTH_CONTROL: 0
+STEPS_PER_IMAGE: 100
+T1: 0
+
+----------------------------------------------------------------------
+# parameters for slip with friction boundary conditions
+----------------------------------------------------------------------
+
+# FRICTION_TYPE: 0    no slip
+# FRICTION_TYPE: not 0 is slip with friction 
+FRICTION_TYPE: 0
+
+# FRICTION_CONSTANT: the constant in the friction law (beta)
+# choose like on page 720 of our paper 
+FRICTION_CONSTANT: 1
+
+SCALE_DIVERGENCE_CONSTRAINT: 1
+
+UREA_INFLOW_SCALE: 4.5e-2
+UREA_PB_DISC: 0
+N_CELL_LAYERS_PSD: 200
+UREA_CONC_MAXIT: 1

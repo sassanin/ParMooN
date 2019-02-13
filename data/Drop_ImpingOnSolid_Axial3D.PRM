@@ -1,0 +1,32 @@
+NBCT
+  1              #number of boundary parts
+IBCT
+  1              #first boundary part
+NCOMP
+  7              #Number of boundary components in first boundary part
+ITYP NSPLINE NPAR
+   1     1     2  # plane with two points
+  -2     1     3
+   1     1     2  # plane with two points
+   1     1     2  # plane with two points
+   1     1     2  # plane with two points
+   1     1     2  # plane with two points
+   1     1     2  # plane with two points
+PARAMETERS
+  0.000000E+0000   0.000000E+0000
+  0.200000E+0000   0.000000E+0000
+  0.000000E+0000   1.000000E+0000     # center of curve
+  1.000000E+0000   0.000000E+0000     # a & b(if(0) b=a) value of the curve
+ -1.571428571428   1.571428571428  # phi1 &phi2 of curve
+  0.000000E+0000   2.000000E+0000
+  0.000000E+0000   -2.000000E+0000
+  0.000000E+0000   0.000000E+0000
+  0.000000E+0000  -1.000000E+0000
+  0.000000E+0000  -1.000000E+0000
+  4.000000E+0000   0.000000E+0000
+  4.000000E+0000  -1.000000E+0000
+  0.000000E+0000   1.000000E+0000
+  4.000000E+0000   0.000000E+0000
+ -3.8000000E+0000   0.000000E+0000
+N_HOLES
+   0

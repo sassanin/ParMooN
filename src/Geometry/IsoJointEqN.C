@@ -1,0 +1,70 @@
+/** ==========================================================================
+#    This file is part of the finite element software ParMooN.
+# 
+#    ParMooN (cmg.cds.iisc.ac.in/parmoon) is a free finite element software  
+#    developed by the research groups of Prof. Sashikumaar Ganesan (IISc, Bangalore),
+#    Prof. Volker John (WIAS Berlin) and Prof. Gunar Matthies (TU-Dresden):
+#
+#    ParMooN is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    ParMooN is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with ParMooN.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    If your company is selling a software using ParMooN, please consider 
+#    the option to obtain a commercial license for a fee. Please send 
+#    corresponding requests to sashi@iisc.ac.in
+
+# =========================================================================*/ 
+   
+// =======================================================================
+// @(#)IsoJointEqN.C        1.2 10/18/99
+// 
+// Class:       TIsoJointEqN
+// Purpose:     connects two cells
+//              has additional vertices for isoparametric reference 
+//              transformation
+//
+// Author:      Gunar Matthies 06.08.1999
+//
+// History:     start of implementation (Gunar Matthies 06.08.99)
+//
+// =======================================================================
+
+#include <BaseCell.h>
+#include <Constants.h>
+#include <IsoJointEqN.h>
+#include <RefDesc.h>
+
+// Constructors
+TIsoJointEqN::TIsoJointEqN(TBaseCell *neighb0) : TJointEqN(neighb0)
+{
+  ID = IsoJointEqN;
+
+  N_Vertices = 0;
+  Vertices = NULL;
+}
+
+TIsoJointEqN::TIsoJointEqN(TBaseCell *neighb0, TBaseCell *neighb1) 
+  : TJointEqN(neighb0, neighb1)
+{
+  ID = IsoJointEqN;
+
+  N_Vertices = 0;
+  Vertices = NULL;
+}
+
+// Methods
+void TIsoJointEqN::SetVertices(int n_vertices, TVertex **vertices)
+{
+  N_Vertices = n_vertices;
+
+  Vertices = vertices;
+}

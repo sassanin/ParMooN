@@ -1,0 +1,12 @@
+ACML example: Multiple streams using drandskipahead and drandleapfrog
+---------------------------------------------------------------------
+
+Generating multiple streams using SKIPAHEAD:
+    0.6416    0.3752    0.5048    0.5263
+    0.5516    0.2618    0.6239    0.4899
+    0.2852    0.5148    0.6155    0.2464
+
+Generating multiple streams using LEAPFROG:
+    0.3752    0.2618    0.5148    0.5048
+    0.6239    0.6155    0.5263    0.4899
+    0.2464    0.2071    0.4011    0.7180

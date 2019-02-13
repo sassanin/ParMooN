@@ -1,0 +1,125 @@
+======================================================================
+#       input file for ParMooN
+======================================================================
+
+VERSION:        1
+LOGFILE:        logfile
+
+GEOFILE:      ../../ParMooN/data/UnitSquare.GEO
+BNDFILE:        ../../ParMooN/data/UnitSquare.PRM
+
+STOKES_PROBLEM: 0
+
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 4
+
+----------------------------------------------------------------------
+# order of ansatz space (=k)
+#   i.e. P_k/P_{k-1} on triangles,  Q_k/Q_{k-1} on quadrangles
+# -1 : use lowest order nonconforming elements
+# -2 : use Q2/P1 discont on quadrilaterals
+# -3 : use Q3/P2 discont on quadrilaterals
+----------------------------------------------------------------------
+VELOCITY_SPACE: 2
+VMS_LARGE_VELOCITY_SPACE: 0
+Axial3D: 0
+USE_ISOPARAMETRIC: 1
+----------------------------------------------------------------------
+# Reynolds number eps=1/RE_NR
+ 
+----------------------------------------------------------------------
+RE_NR: 1
+
+----------------------------------------------------------------------
+# type of discretization:
+#    1 - GALERKIN
+#    2 - SDFEM
+#    3 - UPWIND
+#    4 - LAYTON96
+#    5 - SMAGORINSKY
+#    6 - COLETTI
+#    7 - GL98Conv
+#    8 - GL98AuxProb
+#    9 - VMS_PROJECTION
+----------------------------------------------------------------------
+DISCTYPE:  9
+
+NSE_NONLINEAR_FORM: 2
+SC_NONLIN_ITE_TYPE_SADDLE: 0
+----------------------------------------------------------------------
+# type of Navier-Stokes system
+#
+----------------------------------------------------------------------
+NSTYPE: 4
+
+----------------------------------------------------------------------
+# Laplace type
+----------------------------------------------------------------------
+LAPLACETYPE: 1
+
+----------------------------------------------------------------------
+# order of upwind scheme
+#    0 - sharp upwind
+#    1 - Samarskij upwind
+----------------------------------------------------------------------
+UPWIND_ORDER: 0
+
+----------------------------------------------------------------------
+# factors for SDFEM (delta_K=h_K*DELTAi)
+#   DELTA0 for high Peclet number
+#   DELTA1 for low Peclet number
+----------------------------------------------------------------------
+DELTA0:  0.00
+DELTA1:  0.00
+
+----------------------------------------------------------------------
+# parameters for slip with friction boundary condition
+----------------------------------------------------------------------
+INTERNAL_SLIP_WITH_FRICTION: 0
+FRICTION_TYPE: 0
+FRICTION_POWER: 0
+FRICTION_CONSTANT: 1
+PENETRATION_CONSTANT: 0
+PENETRATION_POWER: 0
+
+----------------------------------------------------------------------
+# parameters for fixed point teration of the nonlinear term in NSE
+----------------------------------------------------------------------
+SC_NONLIN_RES_NORM_MIN_SADDLE: 1e-10
+SC_NONLIN_MAXIT_SADDLE: 2
+
+----------------------------------------------------------------------
+# parameter for time discretization
+----------------------------------------------------------------------
+# time discretization
+# 0 - FORWARD_EULER
+# 1 - BACKWARD_EULER
+# 2 - CRANK_NICOLSON
+# 3 - FRACTIONAL_STEP
+----------------------------------------------------------------------
+TIME_DISC: 2
+STARTTIME: 0
+ENDTIME: 1
+TIMESTEPLENGTH: 0.05
+
+----------------------------------------------------------------------
+# output controls
+----------------------------------------------------------------------
+PSBASENAME:  unitsquare
+VTKBASENAME: unitsquare
+WRITE_PS: 0
+WRITE_VTK: 0
+
+STEPS_PER_IMAGE: 10
+
+MEASURE_ERRORS: 1
+
+SC_VERBOSE: 0
+CC_VERBOSE: 0
+
+OUTFILE:  tnse2d.out
+ 
+
+

@@ -1,0 +1,77 @@
+======================================================================
+#       input file for ParMooN
+======================================================================
+VERSION:        1
+LOGFILE:        logfile
+OUTFILE:        cd2d.out
+
+BNDFILE:        ../../ParMooN/data/UnitSquare.PRM
+# BNDFILE:        ../../ParMooN/data/VacuumTube2D.PRM
+----------------------------------------------------------------------
+# MESH_TYPE = 0 (ParMooN geo mesh), 1 (Gmsh), 2(TetGen mesh)
+----------------------------------------------------------------------
+MESH_TYPE: 0
+USE_PRM: 1
+
+GEOFILE:        ../../ParMooN/data/UnitSquare.GEO
+# GEOFILE:        ../../ParMooN/data/Gmsh/VacuumTube2D.mesh
+# GEOFILE:        ../../ParMooN/data/Gmsh/UnitSqure2D.mesh
+----------------------------------------------------------------------
+
+# choose the example (see also Examples/Example_CD2D.C)
+# 0 - sine laplace (on unit square)
+# 1 - two interior layers (on unit square)
+# 2 - Hemker 1996 (on rectangle with a hole)
+EXAMPLE: 0
+ 
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 4
+
+----------------------------------------------------------------------
+# order of ansatz space (=k)
+#   i.e. P_k on triangles
+#        Q_k on quadrangles
+----------------------------------------------------------------------
+ANSATZ_ORDER: 1
+
+Axial3D: 0
+MEASURE_ERRORS: 1
+
+DISCTYPE:  1
+
+----------------------------------------------------------------------
+# Peclet number eps=1/PE_NR
+----------------------------------------------------------------------
+PE_NR:  1
+
+----------------------------------------------------------------------
+# factors for SDFEM (delta_K=h_K*DELTAi)
+#   DELTA0 for high Peclet number
+#   DELTA1 for low Peclet number
+----------------------------------------------------------------------
+DELTA0:  0.3
+DELTA1:  0.
+SDFEM_TYPE: 0
+
+----------------------------------------------------------------------
+# factors for Local Projection Stabilization
+#   DELTA0 for high Peclet number
+#   DELTA1 for low Peclet number
+----------------------------------------------------------------------
+LP_FULL_GRADIENT: 1
+LP_FULL_GRADIENT_COEFF: 0.5
+LP_FULL_GRADIENT_EXPONENT: 1
+LP_FULL_GRADIENT_ORDER_DIFFERENCE: 1
+----------------------------------------------------------------------
+# output controls
+----------------------------------------------------------------------
+VTKBASENAME: unitsquare
+OUTPUTDIR: VTK
+WRITE_PS: 1
+WRITE_VTK: 1
+
+SC_VERBOSE: 0
+SC_VERBOSE_AMG: 0
+CC_VERBOSE: 0

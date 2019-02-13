@@ -1,0 +1,20 @@
+NBCT
+  1
+IBCT
+  1
+NCOMP
+  4
+ITYP NSPLINE NPAR
+  1     1     2
+  1     1     2
+  1     1     2
+  1     1     2
+PARAMETERS
+0 0
+125 0
+125 0
+0 1
+125 1
+-125 0
+0  1
+0 -1

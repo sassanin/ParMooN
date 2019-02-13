@@ -314,7 +314,7 @@ message("Configuration for the ParMooN Version 1.1")
 message("         Sashikumaar Ganesan")
 message("         Dept. of Computational & Data Sciences")
 message("         Indian Institute of Science, Bangalore, India")  
-message("mailt0 : sashi-AT-cds.iisc.ac.in") 
+message("mailt0 : sashi-AT-iisc.ac.in") 
 message("============================================================================================================"  ) 
 
 

@@ -1,0 +1,47 @@
+/** ==========================================================================
+#    This file is part of the finite element software ParMooN.
+# 
+#    ParMooN (cmg.cds.iisc.ac.in/parmoon) is a free finite element software  
+#    developed by the research groups of Prof. Sashikumaar Ganesan (IISc, Bangalore),
+#    Prof. Volker John (WIAS Berlin) and Prof. Gunar Matthies (TU-Dresden):
+#
+#    ParMooN is free software: you can redistribute it and/or modify
+#    it under the terms of the GNU Affero General Public License as
+#    published by the Free Software Foundation, either version 3 of the
+#    License, or (at your option) any later version.
+#
+#    ParMooN is distributed in the hope that it will be useful,
+#    but WITHOUT ANY WARRANTY; without even the implied warranty of
+#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#    GNU Affero General Public License for more details.
+#
+#    You should have received a copy of the GNU Affero General Public License
+#    along with ParMooN.  If not, see <http://www.gnu.org/licenses/>.
+#
+#    If your company is selling a software using ParMooN, please consider 
+#    the option to obtain a commercial license for a fee. Please send 
+#    corresponding requests to sashi@iisc.ac.in
+
+# =========================================================================*/ 
+   
+
+static double NF_C_L_P2_1D_Xi[] = { -1, 0, 1 };
+static double NF_C_L_P2_1D_Eta[] = { 0, 0, 0 };
+static double NF_C_L_P2_1D_T[] = { -1, 1 };
+
+void NF_C_L_P2_1D_EvalAll(double *PointValues, double *Functionals)
+{
+  Functionals[0] = PointValues[0];
+  Functionals[1] = PointValues[1];
+  Functionals[2] = PointValues[2];
+}
+
+void NF_C_L_P2_1D_EvalEdge( double *PointValues, double *Functionals)
+{
+  Functionals[0] = PointValues[0];
+  Functionals[1] = PointValues[1];
+}
+
+TNodalFunctional1D *NF_C_L_P2_1D_Obj = new TNodalFunctional1D
+        (NF_C_L_P2_1D, 3, 2, 3, 2, NF_C_L_P2_1D_Xi, NF_C_L_P2_1D_Eta,
+         NF_C_L_P2_1D_T, NF_C_L_P2_1D_EvalAll, NF_C_L_P2_1D_EvalEdge);

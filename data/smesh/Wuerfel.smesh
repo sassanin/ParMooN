@@ -1,0 +1,28 @@
+# smesh file
+# Part 1 - node list
+# node count, 3 dim, no attribute, no boundary marker
+8 3 0 0
+# Node index, node coordinates
+0 0.0 0.0 0.0
+1 1.0 0.0 0.0
+2 1.0 1.0 0.0
+3 0.0 1.0 0.0
+4 0.0 0.0 1.0
+5 1.0 0.0 1.0
+6 1.0 1.0 1.0
+7 0.0 1.0 1.0
+
+# Part 2 - facet list
+# facet count
+6 1
+# facets
+4 0 1 2 3 1 # front
+4 4 7 6 5 2 # back
+4 0 1 5 4 3 # bottom
+4 1 2 6 5 4 # right
+4 2 3 7 6 5 # top
+4 3 0 4 7 6 # left
+
+0
+
+0

@@ -1,0 +1,172 @@
+----------------------------------------------------------------------
+#       input file for ParMooN
+----------------------------------------------------------------------
+VERSION:      1
+LOGFILE:      logfile
+OUTFILE:      nse3d.out
+
+BNDFILE:        ../../ParMooN/data/Wuerfel.PRM
+#BNDFILE:        ../../ParMooN/data/SphereInCube.PRM
+#BNDFILE:        ../../ParMooN/data/Sphere.PRM
+
+----------------------------------------------------------------------
+# MESH_TYPE = 0 (ParMooN geo mesh), 1 (Gmsh), 2(TetGen mesh)
+----------------------------------------------------------------------
+MESH_TYPE: 0
+USE_PRM: 1
+
+GEOFILE:        ../../ParMooN/data/Gmsh/SphereInCube.mesh
+GEOFILE:        ../../ParMooN/data/Gmsh/Ship3D.mesh
+GEOFILE:        ../../ParMooN/data/Gmsh/Aerofoil3D.mesh
+#GEOFILE:        ../../ParMooN/data/Gmsh/ship.mesh
+GEOFILE:        ../../ParMooN/data/Wuerfel.GEO
+#GEOFILE:        ../../ParMooN/data/Sphere.GEO
+#GEOFILE:        ../../ParMooN/data/Gmsh/UnitCube3D.mesh
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 4
+
+----------------------------------------------------------------------
+# maximum number of multigrid levels
+----------------------------------------------------------------------
+LEVELS: 0
+
+----------------------------------------------------------------------
+# order of ansatz space (=k)
+#   i.e. P_k on tetra
+#        Q_k on hexa
+----------------------------------------------------------------------
+VELOCITY_SPACE: 2
+ 
+USE_ISOPARAMETRIC: 0
+
+----------------------------------------------------------------------
+# Reynolds number eps=1/RE_NR
+----------------------------------------------------------------------
+RE_NR:  10
+
+----------------------------------------------------------------------
+# FLOW_PROBLEM_TYPE: 0-NSE, 1-Stokes, 2-OSEEN
+----------------------------------------------------------------------
+FLOW_PROBLEM_TYPE: 1
+
+----------------------------------------------------------------------
+# type of discretization: 
+#    1 - GALERKIN
+#    2 - SDFEM
+#    3 - UPWIND
+#    4 - Smagorinsky LES
+----------------------------------------------------------------------
+DISCTYPE:  1
+NSTYPE: 4
+LAPLACETYPE: 0
+
+----------------------------------------------------------------------
+# order of upwind scheme
+#    0 - sharp upwind
+#    1 - Samarskij upwind
+----------------------------------------------------------------------
+UPWIND_ORDER: 1
+
+----------------------------------------------------------------------
+# parameters for slip with friction boundary conditions
+# FRICTION_TYPE: 0 (no slip) else slip with friction
+# FRICTION_CONSTANT: the constant in the friction law (beta)
+----------------------------------------------------------------------
+INTERNAL_SLIP_WITH_FRICTION_IDENTITY: 0
+FRICTION_TYPE: 0 
+FRICTION_CONSTANT: 1
+
+--------------------------------------------------------------------------
+SOLVER_TYPE: 2
+
+SC_NONLIN_RES_NORM_MIN_SADDLE: 1e-8
+SC_NONLIN_MAXIT_SADDLE: 25
+SC_NONLIN_DAMP_FACTOR_SADDLE: 1
+
+SC_LIN_MAXIT_SADDLE: 5
+SC_LIN_RED_FACTOR_SADDLE: 1e-1
+SC_LIN_RES_NORM_MIN_SADDLE: 8e-9
+
+SC_MG_TYPE_SADDLE: 1
+SC_MG_CYCLE_SADDLE: 0
+SC_SMOOTHER_SADDLE: 2
+SC_PRE_SMOOTH_SADDLE: 1
+SC_POST_SMOOTH_SADDLE: 1
+SC_SMOOTH_DAMP_FACTOR_SADDLE: 1
+SC_SMOOTH_DAMP_FACTOR_FINE_SADDLE: 1
+SC_COARSEST_LEVEL_SADDLE: 1
+SC_FIRST_SOLUTION_LEVEL_SADDLE: 0
+SC_GMG_DAMP_FACTOR_SADDLE: 1
+SC_GMG_DAMP_FACTOR_FINE_SADDLE: 1
+
+----------------------------------------------------------------------
+SC_SOLVER_SADDLE: 11
+SC_PRECONDITIONER_SADDLE: 5
+SC_LIN_MAXIT_SADDLE: 15
+SC_LIN_RED_FACTOR_SADDLE: 0.0
+SC_LIN_RES_NORM_MIN_SADDLE: 1e-8
+SC_MINIT: 0
+SC_AMG_PREC_IT: 1
+#SC_AMG_PREC_RED_FACTOR:	
+# SC_EX_MAXIT:
+SC_GMRES_RESTART: 20
+SC_ILU_BETA: 0.0
+SC_MG_CYCLE_SADDLE: 1
+SC_SMOOTHER_SADDLE: 3
+SC_PRE_SMOOTH_SADDLE: 3
+SC_POST_SMOOTH_SADDLE: 3
+SC_SMOOTH_DAMP_FACTOR_SADDLE: 1.0
+SC_COARSE_SMOOTHER_SADDLE: 17
+SC_COARSE_MAXIT_SADDLE: 10
+SC_COARSE_RED_FACTOR_SADDLE: 0.1
+SC_STEP_LENGTH_CONTROL_FINE_SADDLE: 0
+SC_STEP_LENGTH_CONTROL_ALL_SADDLE: 0
+SC_OMEGA_0: 0.01
+# SC_SMOOTHER_RED_FACTOR:		
+SC_OMEGA_COARSE_0: 0.01
+#SC_OMEGA_P_0:
+SC_ILUT_TOL: 0.0001                     
+SC_ILUT_ABSOLUTE_FILLIN: 1             
+SC_ILUT_RELATIVE_FILLIN: 1.0           
+SC_ILUT_SORT: 1               
+SC_SCHUR_INV_OF_A: 5
+SC_SCHUR_INV_OF_A_MAXIT: 1
+SC_SCHUR_ITERATION_DAMP: 0.5
+SC_SCHUR_ITERATION_MAXIT: 10
+SC_SCHUR_STEP_LENGTH_CONTROL: 1
+SC_BRAESS_SARAZIN_MATRIX: 0
+SC_BRAESS_SARAZIN_ALPHA: 3
+
+----------------------------------------------------------------------
+# Par_P0: Output rank number
+# Par_P1: root taking part in computation or not
+# Par_P2: mateis partition type (0/1)
+# Par_P3: 1 - with Halo cells, 0 - withot Halo cells
+# Par_P4: ( 0 smallest / 1 largest) rank contains the SubDomain Dof
+----------------------------------------------------------------------
+Par_P0: 0
+Par_P1: 0
+Par_P2: 0
+Par_P3: 1
+Par_P4: 0
+Par_P5: 1
+Par_P6: 0
+
+----------------------------------------------------------------------
+# output controls
+----------------------------------------------------------------------
+BASENAME: unitcube
+VTKBASENAME: unitcube
+OUTPUTDIR: VTK
+WRITE_PS: 0
+WRITE_VTK: 1
+
+MEASURE_ERRORS: 0 
+
+SC_VERBOSE: 0
+SC_VERBOSE_AMG: 0
+CC_VERBOSE: 0
+
+

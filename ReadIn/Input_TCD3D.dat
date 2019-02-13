@@ -1,0 +1,236 @@
+============================================================================================
+#       			Input File for ParMooN (TCD3D)				   #
+============================================================================================
+VERSION:        1
+
+--------------------------------------------------------------------------------------------
+# Set the PRM and GEO types (../../ParMooN/data/filename.PRM(filename.GEO))		   #
+# Set the SMESHFILE if other Geometry (../../ParMooN/data/medit/filename.mesh)             #
+--------------------------------------------------------------------------------------------
+BNDFILE:        ../../ParMooN/data/UnitSquare.PRM
+#BNDFILE:        ../../ParMooN/data/BigUnitSquare.PRM
+#GEOFILE:        ../../ParMooN/data/BigUnitSquare.GEO
+GEOFILE:        ../../ParMooN/data/TwoTriangles.GEO
+
+--------------------------------------------------------------------------------------------
+# Set Output & VTK filename                                                                #
+# Set 1 --> to write "postscript_file/VTKs/Measure_Errors" else 0                          #
+# Set DRIFT_Z to extrude domain in Z direction                                             #
+# timeprofiling: time profile the program                                                  #   
+--------------------------------------------------------------------------------------------
+LOGFILE:        logfilead
+OUTFILE:        Output_TCD3D.out
+VTKBASENAME:    VTK_TCD
+WRITE_PS: 0
+WRITE_VTK: 0
+MEASURE_ERRORS: 1
+timeprofiling: 1
+
+P0: 0
+--------------------------------------------------------------------------------------------
+# order of ansatz space (=k)                                                               #
+#   i.e. P_k on triangles                                                                  #
+#        Q_k on quadrangles                                                                #
+--------------------------------------------------------------------------------------------
+ANSATZ_ORDER: 1
+TEST_ORDER: 1
+DRIFT_Z: 10
+
+--------------------------------------------------------------------------------------------
+# maximum number of levels                                                                 #
+# number of uniform refinement steps at beginning                                          #
+--------------------------------------------------------------------------------------------
+LEVELS: 3 
+UNIFORM_STEPS: 3
+
+--------------------------------------------------------------------------------------------
+# refinement strategy                                                                      #
+#   0 - uniform refinement                                                                 #
+#   1 - gradient indicator                                                                 #
+#   2 - error estimator                                                                    #
+--------------------------------------------------------------------------------------------
+REFINEMENT: 0
+
+--------------------------------------------------------------------------------------------
+# type of discretization:                                                                  #
+#    1 - GALERKIN                                                                          #
+#    2 - SDFEM                                                                             #
+#    3 - UPWIND                                                                            #
+#    4 - Smagorinsky LES                                                                   #
+--------------------------------------------------------------------------------------------
+DISCTYPE: 1
+USE_ISOPARAMETRIC: 0
+LAPLACETYPE: 0
+
+--------------------------------------------------------------------------------------------
+# Reynolds number eps=1/RE_NR                                                              #
+--------------------------------------------------------------------------------------------
+RE_NR: 0.393851 
+START_RE_NR: 100
+RE_NR_INCREMENT: 5
+STOKES_PROBLEM: 0
+
+--------------------------------------------------------------------------------------------
+# factors for SDFEM (delta_K=h_K*DELTAi)                                                   #
+#   DELTA0 for high Peclet number                                                          #
+#   DELTA1 for low Peclet number                                                           #
+--------------------------------------------------------------------------------------------
+DELTA0:  1.0
+DELTA1:  0.00
+
+--------------------------------------------------------------------------------------------
+# refinement strategy                                                                      #
+# ADAPTIVE_REFINEMENT_CRITERION                                                            #
+#              0 - gradient indicator                                                      #
+#              1 - residual error estimator for H1-Norm                                    #
+#              2 - residual error estimator for L2-Norm                                    #
+#              3 - residual error estimator for Energy-Norm (quasi robust)                 #
+                                                                                           # 
+# REFINE_STRATEGY  0 - compare with maximal local error                                    #
+#                  1 - compare with fraction of global error                               #
+--------------------------------------------------------------------------------------------
+GRID_TYPE: 1
+
+ERROR_CONTROL: 1
+ADAPTIVE_REFINEMENT_CRITERION: 2
+
+REFINE_STRATEGY: 0
+REFTOL: 0.5
+COARSETOL: 0.0  
+MIN_FRACTION_TO_CHANGE: 0.1
+DECREASE_REFTOL_FACTOR: 0.90909
+#INCREASE_COARSETOL_FACTOR: 1.1
+#FRACTION_OF_ERROR: 0.25
+MAX_CELL_LEVEL: 200
+
+--------------------------------------------------------------------------------------------
+#SOLVER_TYPE 0-->AMG                                                                       #
+#	     1-->GMG (Parallel Implemented)                                                #
+#	     2-->DIRECT                                                                    #
+                                                                                           #
+#SC_MG_TYPE_SCALAR 0-->Continuous Elements                                                 #
+#		   1-->Conforming Discontinuous Elements                                   #
+--------------------------------------------------------------------------------------------
+SOLVER_TYPE: 1
+SC_MG_TYPE_SCALAR: 0
+SC_VERBOSE: 0
+
+--------------------------------------------------------------------------------------------
+#SC_SOLVER_SCALAR 11-->Fixed Point Method                                                  #
+#		  16-->FGMRES                                                              #
+                                                                                           #
+#SC_PRECONDITIONER_SCALAR 1-->Jacobi                                                       #
+#			  5-->MultiiGrid                                                   #
+--------------------------------------------------------------------------------------------
+SC_SOLVER_SCALAR: 11
+SC_PRECONDITIONER_SCALAR: 5
+
+--------------------------------------------------------------------------------------------
+#			Parameters for FGMRES/JACOBI/FIXED_POINT schemes                   #
+--------------------------------------------------------------------------------------------
+#SC_LIN_MAXIT_SCALAR :: maximum number of iterations                                       #
+#SC_LIN_RED_FACTOR_SCALAR ::                                                               #
+#SC_LIN_RES_NORM_MIN_SCALAR ::                                                             #
+#SC_MINIT ::                                                                               #
+#SC_AMG_PREC_IT :: number of iterations of preconditioner                                  #
+#SC_GMRES_RESTART :: GMRes restart value                                                   #
+--------------------------------------------------------------------------------------------
+SC_LIN_MAXIT_SCALAR: 1000
+SC_LIN_RED_FACTOR_SCALAR: 0.0
+SC_LIN_RES_NORM_MIN_SCALAR: 1e-11
+SC_MINIT: 0
+SC_AMG_PREC_IT: 1
+SC_GMRES_RESTART: 50
+
+--------------------------------------------------------------------------------------------
+#				Parameter for time discretization                          #
+--------------------------------------------------------------------------------------------
+# time discretization                                                                      #
+# 0 - FORWARD_EULER                                                                        #
+# 1 - BACKWARD_EULER                                                                       #
+# 2 - CRANK_NICOLSON                                                                       #
+# 3 - FRACTIONAL_STEP                                                                      # 
+--------------------------------------------------------------------------------------------
+TIME_DISC: 2
+STARTTIME: 0
+ENDTIME: 0.5
+TIMESTEPLENGTH: 0.01
+RESET_CURRENTTIME: 0
+TIMESTEPLENGTH_TOL: 0.001
+TIMESTEPLENGTH_CONTROL: 0
+STEPS_PER_IMAGE: 1
+T1: 0
+
+--------------------------------------------------------------------------------------------
+#				Parameters for MULTIGRID                                   #
+--------------------------------------------------------------------------------------------
+                                                                                           #
+#SC_ILU_BETA ::                                                                            # 
+#SC_MG_CYCLE_SCALAR :: Type of MG (number of MG recursions) i.e. V-Cycle/F-Cycle/W-Cycle/. #
+--------------------------------------------------------------------------------------------
+SC_ILU_BETA: 0.0
+SC_MG_CYCLE_SCALAR: 1
+
+--------------------------------------------------------------------------------------------
+#SC_SMOOTHER_SCALAR 1-->JACOBI                                                             #
+#		    2-->SOR                                                                #
+#		    3-->SSOR                                                               #
+#		    4-->ILU                                                                #
+#		    5-->SOR Reorder                                                        #
+#		    6-->SSOR Light                                                         #
+                                                                                           #
+#SC_PRE_SMOOTH_SCALAR :: number of pre-smoothing cycles                                    #
+#SC_PRE_SMOOTH_SCALAR :: number of post-smoothing cycles                                   #
+#SC_SMOOTH_DAMP_FACTOR_SCALAR :: damping factor                                            #
+--------------------------------------------------------------------------------------------
+SC_SMOOTHER_SCALAR: 6
+SC_PRE_SMOOTH_SCALAR: 5
+SC_POST_SMOOTH_SCALAR: 5
+SC_SMOOTH_DAMP_FACTOR_SCALAR: 1.0
+
+--------------------------------------------------------------------------------------------
+#SC_COARSE_SMOOTHER_SCALAR 1-->JACOBI                                                      #
+#		           2-->SOR                                                         #  
+#		           3-->SSOR                                                        #
+#		           4-->ILU                                                         #
+#		           5-->SOR Reorder                                                 #
+#		          17-->Exact Gaussian Elimination                                  #
+                                                                                           #
+#SC_COARSE_MAXIT_SCALAR :: number of max iterations in coarsest level                      #
+#SC_COARSE_RED_FACTOR_SCALAR ::                                                            #
+--------------------------------------------------------------------------------------------
+SC_COARSE_SMOOTHER_SCALAR: 6
+SC_COARSE_MAXIT_SCALAR: 10
+SC_COARSE_RED_FACTOR_SCALAR: 0.1 
+
+--------------------------------------------------------------------------------------------
+#SC_STEP_LENGTH_CONTROL_FINE_SCALAR ::                                                     # 
+#SC_STEP_LENGTH_CONTROL_ALL_SCALAR  ::                                                     #
+--------------------------------------------------------------------------------------------
+SC_STEP_LENGTH_CONTROL_FINE_SCALAR: 0
+SC_STEP_LENGTH_CONTROL_ALL_SCALAR: 0
+
+--------------------------------------------------------------------------------------------
+#				Parameters for Parallel Environment                        # 
+--------------------------------------------------------------------------------------------
+# Par_P0: Output rank number                                                               # 
+# Par_P2: mateis partition type (0/1)                                                      #
+# Par_P4: redistribution of masters (0/1)                                                  #
+# Par_P6: Nummber of local convergence step                                                #
+# Par_P5: for hybrid, changing the ratio of dept2 to indpt (under study - set it to 0)     #
+# variables available for parallel (0-20)                                                  #   
+# number of threads to be used for hybrid/OpenMP                                           #
+# MapperType: 1->Master/Slave/Halo type mapping                                            #
+#             2->Master/Slave type Mapping                                                 #
+# DSType: 1->ParDiso									   #
+#         2->Mumps									   #
+--------------------------------------------------------------------------------------------
+Par_P0: 0
+Par_P2: 1
+Par_P4: 0
+Par_P6: 3
+Par_P5: 0
+OMPNUMTHREADS: 2
+MapperType: 1
+DSType: 2
+

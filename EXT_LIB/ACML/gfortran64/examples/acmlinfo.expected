@@ -1,0 +1,6 @@
+ACML (AMD Core Math Library) version 2.0.1  (Fri Jun 11 09:31:42 BST 2004)
+Copyright AMD,NAG 2004
+Built using Fortran compiler: GNU Fortran (GCC) 3.3 20030312 (prerelease) (SuSE Linux)
+   with flags: -Wall -W -Wno-uninitialized -Wimplicit -fPIC -fno-second-underscore -m64 -DIS_64BIT -O3
+ and C compiler: gcc (GCC) 3.3 20030312 (prerelease) (SuSE Linux)
+   with flags: -Wall -W -Wno-unused-parameter -Wstrict-prototypes -Wwrite-strings -D_GNU_SOURCE -D_ISOC99_SOURCE -fPIC -m64 -DIS_64BIT -O3

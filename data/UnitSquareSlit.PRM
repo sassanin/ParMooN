@@ -1,0 +1,41 @@
+NBCT
+  2
+IBCT
+  1
+NCOMP
+  4
+ITYP NSPLINE NPAR
+  1     1     2
+  1     1     2
+  1     1     2
+  1     1     2
+IBCT
+  2
+NCOMP
+  4
+ITYP NSPLINE NPAR
+  1     1     2
+  1     1     2
+  1     1     2
+  1     1     2
+PARAMETERS
+0 0 
+1 0 
+1 0 
+0 1
+1 1
+-1 0 
+0 1
+0 -1
+0.45 0.35
+0 0.3
+0.45 0.65
+0.1 0
+0.55 0.65
+0 -0.3
+0.55 0.35
+-0.1 0
+N_HOLES
+  1
+point in each hole
+0.5 0.5

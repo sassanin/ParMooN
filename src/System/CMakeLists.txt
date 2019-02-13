@@ -1,0 +1,22 @@
+
+include_directories("${CMAKE_SOURCE_DIR}/include/System")
+
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/Assemble.C") 
+
+if("${AParMooN_GEO}" STREQUAL "2D")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/AssembleMat2D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemNSE2D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemCD2D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemTCD2D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemTNSE2D_FDM.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemTNSE2D.C")
+
+elseif("${AParMooN_GEO}" STREQUAL "3D")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/AssembleMat3D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemCD3D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemTCD3D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemNSE3D.C")
+list(APPEND SYST_SOURCES "${PROJECT_SOURCE_DIR}/src/System/SystemTNSE3D.C")
+
+endif("${AParMooN_GEO}" STREQUAL "2D")
+add_library(sys STATIC ${SYST_SOURCES})

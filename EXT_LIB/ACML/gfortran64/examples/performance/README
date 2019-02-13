@@ -1,0 +1,33 @@
+
+This directory contains performance example programs that call the ACML. Use
+the GNUmakefile to compile, run, and plot the results of the programs:
+
+ % make
+
+You may need to edit the GNUmakefile to point at the correct location of your 
+installed copy of the ACML, or to change compilers and flags. 
+To plot timing graphs of all the results using gnuplot, without regenerating
+them, type 
+
+ % make plots 
+
+To plot individual results for the data file time_<name>.res, run 
+
+ % ./plot_one.sh <name>
+
+If you do not have gnuplot, please install it. The utility's homepage is
+www.gnuplot.info - note that gnuplot version 4.0 or later is required.
+
+If you are on an SMP (multiprocessor) machine and have installed an OpenMP
+version of the ACML, then a command such as
+
+ % make OMP_NUM_THREADS=5
+
+will run the timing programs on P processors, where P = 1, 2, 4, 5; i.e.,
+P equals an integer power of 2 and also equals OMP_NUM_THREADS if this value 
+is not a power of 2. The results for a particular routine are concatenated into 
+one file. gnuplot then shows on one graph for each routine the results of 
+varying the number of processors for that routine. As before, these graphs can 
+be viewed without regenerating the results by typing
+
+ % make plots

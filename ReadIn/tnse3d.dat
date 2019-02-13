@@ -1,0 +1,255 @@
+----------------------------------------------------------------------
+#       input file for ParMooN
+----------------------------------------------------------------------
+VERSION:      1
+LOGFILE:      logfile
+OUTFILE:      nse3d.out
+
+BNDFILE:        ../../ParMooN/data/SphereInCube.PRM
+BNDFILE:        ../../ParMooN/data/Sphere.PRM
+BNDFILE:        ../../ParMooN/data/Wuerfel.PRM
+----------------------------------------------------------------------
+# MESH_TYPE = 0 (ParMooN geo mesh), 1 (Gmsh), 2(TetGen mesh)
+----------------------------------------------------------------------
+MESH_TYPE: 1
+USE_PRM: 0
+GEOFILE:        ../../ParMooN/data/Gmsh/SphereInCube.mesh
+GEOFILE:        ../../ParMooN/data/Gmsh/floatingship.mesh
+GEOFILE:        ../../ParMooN/data/Gmsh/aerofoil3D.mesh
+#GEOFILE:        ../../ParMooN/data/Gmsh/ship.mesh
+#GEOFILE:        ../../ParMooN/data/Sphere.GEO
+#GEOFILE:        ../../ParMooN/data/Wuerfel.GEO
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 1
+
+----------------------------------------------------------------------
+# maximum number of multigrid levels
+----------------------------------------------------------------------
+LEVELS: 3
+
+----------------------------------------------------------------------
+# order of ansatz space (=k)
+#   i.e. P_k on tetra
+#        Q_k on hexa
+----------------------------------------------------------------------
+VELOCITY_SPACE: 2 
+ 
+USE_ISOPARAMETRIC: 0
+
+----------------------------------------------------------------------
+# Reynolds number eps=1/RE_NR
+----------------------------------------------------------------------
+RE_NR:  10
+
+----------------------------------------------------------------------
+# FLOW_PROBLEM_TYPE: 0-NSE, 1-Stokes, 2-OSEEN
+----------------------------------------------------------------------
+FLOW_PROBLEM_TYPE: 0
+
+----------------------------------------------------------------------
+# refinement strategy
+#   0 - uniform refinement
+#   1 - gradient indicator
+#   2 - error estimator
+----------------------------------------------------------------------
+REFINEMENT: 0
+
+----------------------------------------------------------------------
+# type of discretization: 
+#    1 - GALERKIN
+#    2 - SDFEM
+#    3 - UPWIND
+#    9 - VMS
+----------------------------------------------------------------------
+DISCTYPE: 1
+NSTYPE: 4
+USE_ISOPARAMETRIC: 0
+LAPLACETYPE: 1
+
+----------------------------------------------------------------------
+# parameters for slip with friction boundary condition
+----------------------------------------------------------------------
+FILTER_WIDTH_CONSTANT: 1
+FILTER_WIDTH_POWER: 1
+
+----------------------------------------------------------------------
+# parameters for turbulent flows
+----------------------------------------------------------------------
+
+TURBULENT_VISCOSITY_TYPE: 17
+TURBULENT_VISCOSITY_TENSOR: 0
+TURBULENT_VISCOSITY_CONSTANT: 0.01
+CELL_MEASURE: 2
+
+
+----------------------------------------------------------------------
+# order of upwind scheme
+#    0 - sharp upwind
+#    1 - Samarskij upwind
+----------------------------------------------------------------------
+UPWIND_ORDER: 1
+
+----------------------------------------------------------------------
+# factors for SDFEM (delta_K=h_K*DELTAi)
+#   DELTA0 for high Peclet number
+#   DELTA1 for low Peclet number
+----------------------------------------------------------------------
+DELTA0:  1.0
+DELTA1:  0.00
+
+----------------------------------------------------------------------
+# paramters for individual use
+# P0: 
+# P1: number of nonlinear iterations
+# P3: number of refinements before first grid 
+# P9: smoothing parameter omega
+----------------------------------------------------------------------
+P0: 0.8
+P1: 20
+P2: 0.0
+P3: 0.0
+
+P4: 0
+P5: 0.001
+P6: 0.3
+
+P7: 0.0
+P8: 0.0
+P9: 998877661
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+# refinement strategy
+# ADAPTIVE_REFINEMENT_CRITERION
+#              0 - gradient indicator
+#              1 - residual error estimator for H1-Norm
+#              2 - residual error estimator for L2-Norm
+#              3 - residual error estimator for Energy-Norm (quasi robust)
+
+# REFINE_STRATEGY  0 - compare with maximal local error
+                   1 - compare with fraction of global error
+----------------------------------------------------------------------
+GRID_TYPE: 1
+
+ERROR_CONTROL: 1
+ADAPTIVE_REFINEMENT_CRITERION: 2
+
+REFINE_STRATEGY: 0
+REFTOL: 0.5
+COARSETOL: 0.0  
+MIN_FRACTION_TO_CHANGE: 0.1
+DECREASE_REFTOL_FACTOR: 0.90909
+#INCREASE_COARSETOL_FACTOR: 1.1
+#FRACTION_OF_ERROR: 0.25
+MAX_CELL_LEVEL: 200
+--------------------------------------------------------------------------
+SOLVER_TYPE: 2
+
+SC_NONLIN_RES_NORM_MIN_SADDLE: 1e-6
+SC_NONLIN_MAXIT_SADDLE: 50
+SC_NONLIN_DAMP_FACTOR_SADDLE: 1.0
+
+SC_LIN_MAXIT_SADDLE: 5
+SC_LIN_RED_FACTOR_SADDLE: 1e-1
+SC_LIN_RES_NORM_MIN_SADDLE: 7e-7
+
+SC_MG_TYPE_SADDLE: 1
+SC_MG_CYCLE_SADDLE: 0
+SC_SMOOTHER_SADDLE: 2
+SC_PRE_SMOOTH_SADDLE: 1
+SC_POST_SMOOTH_SADDLE: 1
+SC_SMOOTH_DAMP_FACTOR_SADDLE: 1.0
+SC_SMOOTH_DAMP_FACTOR_FINE_SADDLE: 1.0
+SC_COARSEST_LEVEL_SADDLE: 0
+SC_FIRST_SOLUTION_LEVEL_SADDLE: 0
+SC_GMG_DAMP_FACTOR_SADDLE: 1.0
+SC_GMG_DAMP_FACTOR_FINE_SADDLE: 1.0
+SC_COARSE_SMOOTHER_SADDLE: 2
+SC_COARSE_MAXIT_SADDLE: 100
+SC_COARSE_RED_FACTOR_SADDLE: 1e-1
+SC_STEP_LENGTH_CONTROL_FINE_SADDLE: 0
+SC_STEP_LENGTH_CONTROL_ALL_SADDLE: 1
+SC_VERBOSE: 1
+
+----------------------------------------------------------------------
+SC_SOLVER: 16
+SC_PRECONDITIONER: 5
+SC_LIN_MAXIT_SCALAR: 10
+SC_LIN_RED_FACTOR_SCALAR: 1e-1
+SC_LIN_RES_NORM_MIN_SCALAR: 1e-12
+SC_MINIT: 0
+SC_AMG_PREC_IT: 1
+# SC_AMG_PREC_RED_FACTOR:	
+# SC_EX_MAXIT:
+SC_GMRES_RESTART: 10
+SC_ILU_BETA: 0.0
+SC_MG_CYCLE_SCALAR: 1
+SC_SMOOTHER_SCALAR: 3
+SC_PRE_SMOOTH_SCALAR: 3
+SC_POST_SMOOTH_SCALAR: 3
+SC_SMOOTH_DAMP_FACTOR_SCALAR: 1.0
+SC_COARSE_SMOOTHER_SCALAR: 3
+SC_COARSE_MAXIT_SCALAR: 10
+SC_COARSE_RED_FACTOR_SCALAR: 0.1
+SC_STEP_LENGTH_CONTROL_FINE_SCALAR: 1
+SC_STEP_LENGTH_CONTROL_ALL_SCALAR: 1
+SC_OMEGA_0: 0.01
+# SC_SMOOTHER_RED_FACTOR:		
+SC_OMEGA_COARSE_0: 0.01
+#SC_OMEGA_P_0:
+SC_ILUT_TOL: 0.0001                     
+SC_ILUT_ABSOLUTE_FILLIN: 1             
+SC_ILUT_RELATIVE_FILLIN: 1.0           
+SC_ILUT_SORT: 1               
+SC_SCHUR_INV_OF_A: 5
+SC_SCHUR_INV_OF_A_MAXIT: 1
+SC_SCHUR_ITERATION_DAMP: 0.5
+SC_SCHUR_ITERATION_MAXIT: 10
+SC_SCHUR_STEP_LENGTH_CONTROL: 1
+SC_BRAESS_SARAZIN_MATRIX: 0
+SC_BRAESS_SARAZIN_ALPHA: 3
+SC_VERBOSE_AMG: 0
+CC_VERBOSE: 0
+
+----------------------------------------------------------------------
+# Par_P0: Output rank number
+# Par_P1: root taking part in computation or not
+# Par_P2: mateis partition type (0/1)
+# Par_P3: 1 - with Halo cells, 0 - withot Halo cells
+# Par_P4: ( 0 smallest / 1 largest) rank contains the SubDomain Dof
+----------------------------------------------------------------------
+Par_P0: 0
+Par_P1: 0
+Par_P2: 0
+Par_P3: 1
+Par_P4: 0
+Par_P5: 1
+Par_P6: 0
+
+----------------------------------------------------------------------
+#  controls temporal disc
+----------------------------------------------------------------------
+TIME_DISC: 2
+STARTTIME: 0.0
+ENDTIME: 8
+TIMESTEPLENGTH: 0.01
+STEPS_PER_IMAGE: 1
+DSType: 2
+
+
+----------------------------------------------------------------------
+# output controls
+----------------------------------------------------------------------
+BASENAME: unitcube
+VTKBASENAME: unitcube
+OUTPUTDIR: VTK
+WRITE_PS: 0
+WRITE_VTK: 1
+
+MEASURE_ERRORS: 1  
+
+SC_VERBOSE: 0
+SC_VERBOSE_AMG: 0
+CC_VERBOSE: 0
+

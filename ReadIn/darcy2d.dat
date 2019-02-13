@@ -1,0 +1,59 @@
+======================================================================
+#       input file for ParMooN
+======================================================================
+VERSION:        1
+OUTFILE:        darcy2d.out
+
+BNDFILE:        ../data/UnitSquare.PRM
+GEOFILE:        ../data/UnitSquare.GEO
+
+# choose example
+# 0 -- with known sin and cos solution (e.g. to study convergence rates)
+# 1 -- simple benchmark with known solution (linear velocity, zero pressure)
+# 2 -- simple benchmark with known solution (cubic velocity, quartic pressure)
+# 3 -- obstacle with ten times lower conductivity. 
+#      Set P0 for various obstacles, see Examples/Darcy_2D/Obstacle.h.
+# 4 -- 5-spot problem, see Arif Masud, Thomas J.R. Hughes: "A stabilized mixed 
+#      finite element method for Darcy flow", chapter 4.2
+EXAMPLE: 0
+ 
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 5
+
+# Raviart-Thomas space RT_k
+# use one of the four pairs for (VELOCITY_SPACE, PRESSURE_SPACE)
+# currently there is no run time check that the given combination is inf-sup stable
+# (1000,  0)     RT_0
+# (1001,-11)     RT_1
+# (1002,-12)     RT_2
+# (1003,-13)     RT_3
+# BDM k
+# (1011,  0 )    BDM_1
+# (1012,-110)    BDM_2
+# (1013,-120)    BDM_3
+VELOCITY_SPACE:  1001
+PRESSURE_SPACE:  -11
+
+MEASURE_ERRORS: 1  
+
+----------------------------------------------------------------------
+# INPUT_QUAD_RULE is used to determine the quadrature formula during 
+# the computation of errors. Set it to 99 (or so) to get the highest 
+# order quadrature formula available
+#INPUT_QUAD_RULE: 6
+
+----------------------------------------------------------------------
+# Permeability:  (1/sigma) u - nabla p = 0
+SIGMA_PERM:  1
+
+
+SOLVER_TYPE: 2
+
+BASENAME: darcy
+OUTPUTDIR: VTK
+WRITE_PS: 0
+WRITE_VTK: 0
+
+SC_VERBOSE: 0

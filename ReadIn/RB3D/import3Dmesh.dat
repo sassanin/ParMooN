@@ -1,0 +1,59 @@
+======================================================================
+#       input file for MooN_MD
+======================================================================
+VERSION:        1
+BNDFILE:        ../../ParMooN/data/Cube.PRM
+GEOFILE:        ../../ParMooN/data/Cube.GEO
+#SMESHFILE:       ../../ParMooN/data/medit/brain.mesh
+LOGFILE:        logfilead
+OUTFILE:         terahertz.out
+PSBASENAME:     ../../ParMooN/data/UnitSquare.PRM
+GMVBASENAME:    ../../ParMooN/data/TwoTriangles.GEO
+#SMESHFILE:      ../../ParMooN/data/medit/simplecube.mesh
+#SMESHFILE:      ../../ParMooN/data/medit/solidfluidconforming2.mesh
+#SMESHFILE:      ../../ParMooN/data/medit/aerofoil3d.mesh
+SMESHFILE:      ../../data/medit/spurvelcube.mesh
+#SMESHFILE:      ../../ParMooN/data/medit/spurvelsphere.mesh
+SOLIDSMESH:      ../../ParMooN/data/fsi/solidbody.mesh
+FLUIDSMESH:      ../../ParMooN/data/fsi/fluiddomain1.mesh
+
+#DRIFT_Z: 1
+
+VTKBASENAME: cube
+WRITE_PS: 0
+WRITE_GRAPE: 0
+WRITE_GNU: 0
+WRITE_GMV: 0
+WRITE_VTK: 1
+----------------------------------------------------------------------
+# order of ansatz space (=k)
+#   i.e. P_k on triangles
+#        Q_k on quadrangles
+----------------------------------------------------------------------
+VELOCITY_SPACE: 2
+ANSATZ_ORDER: 2
+TEST_ORDER: 1
+----------------------------------------------------------------------
+# number of uniform refinement steps at beginning
+----------------------------------------------------------------------
+UNIFORM_STEPS: 0
+----------------------------------------------------------------------
+P0: 1e-2
+----------------------------------------------------------------------
+# parameter for time discretization
+----------------------------------------------------------------------
+# time discretization
+# 0 - FORWARD_EULER
+# 1 - BACKWARD_EULER
+# 2 - CRANK_NICOLSON
+# 3 - FRACTIONAL_STEP
+----------------------------------------------------------------------
+TIME_DISC: 1
+STARTTIME: 0
+ENDTIME: 20
+TIMESTEPLENGTH: 0.01
+RESET_CURRENTTIME: 0
+TIMESTEPLENGTH_TOL: 0.001
+TIMESTEPLENGTH_CONTROL: 0
+STEPS_PER_IMAGE: 1
+T1: 0

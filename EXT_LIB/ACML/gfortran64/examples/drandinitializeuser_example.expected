@@ -1,0 +1,10 @@
+
+ACML example: DRANDINITIALIZEUSER
+---------------------------------
+
+Use of a user-supplied base generator for random numbers
+
+Numbers from a uniform U(0,1) distribution:
+    0.0013    0.9205    0.5837    0.1551
+    0.4771    0.1568    0.8876    0.0106
+    0.7924    0.0516    0.2686    0.7153

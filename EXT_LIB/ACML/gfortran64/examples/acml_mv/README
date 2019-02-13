@@ -1,0 +1,5 @@
+
+This directory contains example programs which call the ACML vector math
+library. Use the GNUmakefile to compile and run the programs. You may need to
+edit the GNUmakefile to point at the correct location of your installed
+copy of the ACML, or to change compilers and flags.
