@@ -1,8 +1,8 @@
 # ===================================================================
 # This is FindBLAS.cmake file for the ParMooN Version 1.1
 # written by Sashikumaar Ganesan, CDS, IISc Bangalore, India
-# date: 07 June 2015
-# searching for a BLAS lib in the system 
+# date: 14 Feb 2018
+# searching for MKL BLAS lib in the system 
 # if found, this will define
 #  BLAS_FOUND - System has BLAS
 #  BLAS_INCLUDE_DIRS - The BLAS include directories
@@ -14,29 +14,22 @@ endif(BLAS_INCLUDES AND BLAS_LIBRARIES)
 
 if(NOT BLAS_FOUND)
  
-  find_path(BLAS_INCLUDE_DIR   acml.h PATHS $ENV{ACMBLASDIR}/include ${CMAKE_INCLUDE_PATH})
-  find_library(BLAS_LIBRARY NAMES acml PATHS $ENV{BLASDIR}/lib ${CMAKE_LIBRARY_PATH})
+  find_path(BLAS_INCLUDE_DIR   mkl.h PATHS $ENV{ACMBLASDIR}/include ${CMAKE_INCLUDE_PATH})
+  find_library(BLAS_LIBRARY NAMES mkl_core PATHS $ENV{BLASDIR}/lib ${CMAKE_LIBRARY_PATH})
   get_filename_component(BLAS_LIBDIR ${BLAS_LIBRARY} PATH)
-  find_library(BLAS_LIBRARY_MP NAMES acml_mv PATHS ${BLAS_LIBDIR})
-   if(NOT BLAS_LIBRARY_MP)
-      find_library(BLAS_LIBRARY_MP NAMES acml_mp PATHS ${BLAS_LIBDIR})
-    endif(NOT BLAS_LIBRARY_MP)  
-      
-  if(NOT BLAS_LIBRARY)
-    message("BLAS not found in the system, so checking the availability in ParMooN for the selected AParMooN_ARCH=${AParMooN_ARCH}")
-    find_path(BLAS_INCLUDE_DIR  acml.h PATHS ${PARMOON_EXTLIB_PATH}/ACML/gfortran64/include)
-    find_library(BLAS_LIBRARY NAMES acml PATHS ${PARMOON_EXTLIB_PATH}/ACML/gfortran64/lib) 
-    get_filename_component(BLAS_LIBDIR ${BLAS_LIBRARY} PATH)
-    find_library(BLAS_LIBRARY_MP NAMES acml_mv PATHS ${BLAS_LIBDIR})
-    if(NOT BLAS_LIBRARY_MP)
-      find_library(BLAS_LIBRARY_MP NAMES acml_mp PATHS ${BLAS_LIBDIR})  
-    endif(NOT BLAS_LIBRARY_MP)       
-  endif(NOT BLAS_LIBRARY)
+  find_library(BLAS_LIBRARY_MP NAMES mkl_intel_lp64 PATHS ${BLAS_LIBDIR})
+  find_library(BLAS_LIBRARY_SQ NAMES mkl_sequential PATHS ${BLAS_LIBDIR})
   
   if(BLAS_LIBRARY)  
-    # combine mumps and its deps    
+    # combine mumps and its deps 
+    if(BLAS_LIBRARY_SQ)
+      set(BLAS_LIBRARY   ${BLAS_LIBRARY_SQ} ${BLAS_LIBRARY}  ) 
+    else(BLAS_LIBRARY_SQ)   
+      set(BLAS_LIBRARY FALSE)
+    endif(BLAS_LIBRARY_SQ)    
+    
     if(BLAS_LIBRARY_MP)
-      set(BLAS_LIBRARY  ${BLAS_LIBRARY}  ${BLAS_LIBRARY_MP} ) 
+      set(BLAS_LIBRARY   ${BLAS_LIBRARY_MP} ${BLAS_LIBRARY}  ) 
     else(BLAS_LIBRARY_MP)   
       set(BLAS_LIBRARY FALSE)
     endif(BLAS_LIBRARY_MP)

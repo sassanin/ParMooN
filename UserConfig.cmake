@@ -12,8 +12,12 @@ set(AParMooN_GEO "2D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio 
 # set(AParMooN_GEO "3D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio of the problem")
  #...................................................................................................................................................
 # select this line accordingly to include your main program
-set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/CD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
+#set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/CD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
+set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/TCD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
 
+# set the path to save the exe file ....................................................................................
+# set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/cd2d" CACHE STRING "select the model")
+set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/tcd2d" CACHE STRING "select the model")
 
 
 # selection of architect type (LINUX64 MAC64 INTEL64 TYRONE64 CRAY64)
@@ -25,21 +29,17 @@ set(AParMooN_PARALLEL_TYPE "SEQUENTIAL" CACHE STRING "select the parallel type")
 #  selection of program type (MPICH OPENMPI INTELMPI CRAYMPI MACMPI)
 set(AParMooN_MPI_IMPLEMENTATION "INTELMPI" CACHE STRING "select the MPI Implementation type")
 
-# set the path to save the exe file ....................................................................................
-set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/cd2d" CACHE STRING "select the model")
-
-
-# CMAKE_BUILD_TYPE [ DEBUG | RELEASE | RELWITHDEBINFO | MINSIZEREL ]
-set(EXE_BUILD_TYPE RELEASE)
-
 # set FALSE, if you want to use libs provided in PARMOON 
 # if you set TRUE, it will search in all you lib paths and if not found, PARMOON libs will be used
-set(AParMooN_USE_SYSTEM_BLAS TRUE)
+set(AParMooN_USE_SYSTEM_MKLBLAS TRUE)
 set(AParMooN_USE_SYSTEM_UMFPACK TRUE)
 set(AParMooN_USE_SYSTEM_LAPACK TRUE)
 set(AParMooN_USE_SYSTEM_MUMPS TRUE)
 set(AParMooN_USE_SYSTEM_GRIDGEN TRUE)
 set(AParMooN_USE_SYSTEM_TETGEN TRUE)
+
+# CMAKE_BUILD_TYPE [ DEBUG | RELEASE | RELWITHDEBINFO | MINSIZEREL ]
+set(EXE_BUILD_TYPE RELEASE)
 
 # SET(DAI_WITH_BP ON CACHE BOOL "Belief Propagation" FORCE)
 # ========================================================================================================================

@@ -112,10 +112,10 @@ int main(int argc, char* argv[])
       exit(0);
      }    
      
-// #if defined(__HEMKER__) || defined(__BEAM__) 
+#if defined(__HEMKER__) || defined(__BEAM__) 
 //   TriaReMeshGen(Domain);  
-//   TDatabase::ParamDB->UNIFORM_STEPS = 0;
-// #endif   
+  TDatabase::ParamDB->UNIFORM_STEPS = 0;
+#endif   
           
   // refine grid up to the coarsest level
   for(i=0; i<TDatabase::ParamDB->UNIFORM_STEPS; i++)
