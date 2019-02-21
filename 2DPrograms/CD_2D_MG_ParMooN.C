@@ -285,20 +285,25 @@ int main(int argc, char* argv[])
   PsBaseName = TDatabase::ParamDB->PSBASENAME;
   VtkBaseName = TDatabase::ParamDB->VTKBASENAME;
 
+  
+  LEVELS = TDatabase::ParamDB->LEVELS;
+//   mg_level += LEVELS;
+
   // set type of multilevel
   mg_type = TDatabase::ParamDB->SC_MG_TYPE_SCALAR;
   if(TDatabase::ParamDB->SOLVER_TYPE==AMG||
       TDatabase::ParamDB->SOLVER_TYPE==DIRECT)
-   mg_type = 0;  
-  
+   {
+     mg_type = 0;  
+     TDatabase::ParamDB->UNIFORM_STEPS +=LEVELS;
+     LEVELS = 1;
+   }
   
   if(mg_type)
     mg_level = 0;
   else
     mg_level = -1;
     
-  LEVELS = TDatabase::ParamDB->LEVELS;
-//   mg_level += LEVELS;
 
   // initialize multigrid
   if(TDatabase::ParamDB->SOLVER_TYPE == GMG)
@@ -380,7 +385,9 @@ int main(int argc, char* argv[])
      else
          MeshReGen_Hemker(Domain);
 #endif
-
+ 
+       
+       
   // refine grid
   for(i=0;i<TDatabase::ParamDB->UNIFORM_STEPS;i++)
 	      Domain->RegRefineAll();
@@ -661,7 +668,7 @@ int main(int argc, char* argv[])
       MatricesA[i] = sqmatrixA_low;
     } 
 
-    // build matrices for high order disc
+    // build matrices for high order disccd2d
     if ((i>=FirstSolve)||(mg_type==0))
     {
      sqstructureA = new TSquareStructure2D(scalar_space);

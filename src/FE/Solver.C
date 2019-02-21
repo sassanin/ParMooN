@@ -289,6 +289,7 @@ void SetAMGDefaults(AMG_CoarsenContext &cc, AMG_SolverContext &sc)
   // THESE ARE THE DEFAULTS, DO NOT CHANGE
   // solver context
   sc.solver = TDatabase::ParamDB->SC_SOLVER_SCALAR;
+  
   sc.preconditioner = TDatabase::ParamDB->SC_PRECONDITIONER_SCALAR;
   sc.maxit = TDatabase::ParamDB->SC_LIN_MAXIT_SCALAR;
   sc.red_factor = TDatabase::ParamDB->SC_LIN_RED_FACTOR_SCALAR;
@@ -440,9 +441,9 @@ memory[0]=memory[1]=memory[2]=0.;
    OutPut("sol("<<i+1<< ")=" << sol[i] << ";" << endl);
     OutPut("rhs("<<i+1<< ")=" << rhs[i] << ";" << endl);
     }*/
-
-  SetAMGDefaults(cc, sc);
   
+  SetAMGDefaults(cc, sc);
+ 
 #ifdef _MALLOC_MALLOC_H_
  info = mstats();
 #else   

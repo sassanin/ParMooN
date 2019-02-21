@@ -78,7 +78,7 @@ void BoundValueAdjoint(int BdComp, double Param, double &value)
 void BilinearCoeffs(int n_points, double *x, double *y,
         double **parameters, double **coeffs)
 {
-  double eps=1/TDatabase::ParamDB->PE_NR;
+  double eps=1./TDatabase::ParamDB->PE_NR;
   double angle = 0, v1, v2;
   int i;
   double *coeff;

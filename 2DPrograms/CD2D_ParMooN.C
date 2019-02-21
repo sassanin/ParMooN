@@ -114,7 +114,7 @@ int main(int argc, char* argv[])
      
 #if defined(__HEMKER__) || defined(__BEAM__) 
 //   TriaReMeshGen(Domain);  
-  TDatabase::ParamDB->UNIFORM_STEPS = 0;
+//   TDatabase::ParamDB->UNIFORM_STEPS = 0;
 #endif   
           
   // refine grid up to the coarsest level
@@ -165,7 +165,7 @@ int main(int argc, char* argv[])
   // Disc type: GALERKIN (or) SDFEM  (or) UPWIND (or) GLS (or) SUPG (or) LOCAL_PROJECTION
   // Solver: AMG_SOLVE (or) GMG  (or) DIRECT 
   Disctype = TDatabase::ParamDB->DISCTYPE;
-  SystemMatrix = new TSystemCD2D(Scalar_FeSpace, Disctype, DIRECT);
+  SystemMatrix = new TSystemCD2D(Scalar_FeSpace, Disctype, TDatabase::ParamDB->SOLVER_TYPE);
   
   // initilize the system matrix with the functions defined in the example
   SystemMatrix->Init(BilinearCoeffs, BoundCondition, BoundValue);

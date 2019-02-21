@@ -39,6 +39,7 @@
 #include <AuxParam2D.h>
 #include <LocalProjection.h>
 #include <DirectSolver.h>
+#include <Solver.h>
 #include <stdlib.h>
 #include <string.h>
 // #include <sstream>
@@ -207,11 +208,10 @@ void TSystemCD2D::Assemble(TAuxParam2D *aux, double *sol, double *rhs)
 
 void TSystemCD2D::Solve(double *sol, double *rhs)
 {
-  
     switch(SOLVER)
      {
       case AMG_SOLVE:
-        cout << "AMG_SOLVE not yet implemented " <<endl;
+         Solver(sqmatrixA, rhs, sol);
       break;
 
       case GMG:
@@ -226,9 +226,7 @@ void TSystemCD2D::Solve(double *sol, double *rhs)
             OutPut("Unknown Solver" << endl);
             exit(4711);;
      }    
-  
-  
-}
+  }
 
 void TSystemCD2D::GetMassAndArea(TFEFunction2D *fefunction, double *parameters)
  {
