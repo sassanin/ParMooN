@@ -359,7 +359,7 @@ memory[0]=memory[1]=memory[2]=0.;
   memory[0]=MALLINFO.usmblks+MALLINFO.uordblks;
 #endif  
   
-  sc.system_type=SCALAR;
+  sc.system_type=SCALAR1;
   n = matrix->GetN_Columns();
   m = matrix->GetN_Entries();
 
@@ -398,6 +398,7 @@ memory[0]=memory[1]=memory[2]=0.;
 
   B[1] = B[0];
 
+    
   if (TDatabase::ParamDB->INTERNAL_SORT_AMG)
   {
       // sort matrix, diagonal entry

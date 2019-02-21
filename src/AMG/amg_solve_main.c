@@ -1624,7 +1624,7 @@ static int AMG_ClearSolverOverhead (AMG_SolverContext *sc, AMG_CoarsenContext *c
                                                                             */
 /****************************************************************************/
 
-int AMG (AMG_SolverContext *sc, AMG_CoarsenContext *cc, AMG_MATRIX *A,
+int AMG(AMG_SolverContext *sc, AMG_CoarsenContext *cc, AMG_MATRIX *A,
          AMG_MATRIX **B0, AMG_VECTOR *x, AMG_VECTOR *b0)
 {
   int rv,i,j,memory[3];

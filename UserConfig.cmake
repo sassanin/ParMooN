@@ -12,12 +12,12 @@ set(AParMooN_GEO "2D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio 
 # set(AParMooN_GEO "3D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio of the problem")
  #...................................................................................................................................................
 # select this line accordingly to include your main program
-#set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/CD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
-set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/TCD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
+set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/CD_2D_MG_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
+# set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/TCD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
 
 # set the path to save the exe file ....................................................................................
-# set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/cd2d" CACHE STRING "select the model")
-set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/tcd2d" CACHE STRING "select the model")
+set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/cd2d" CACHE STRING "select the model")
+# set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/tcd2d" CACHE STRING "select the model")
 
 
 # selection of architect type (LINUX64 MAC64 INTEL64 TYRONE64 CRAY64)
