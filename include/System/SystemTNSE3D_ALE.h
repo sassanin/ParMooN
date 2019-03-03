@@ -50,8 +50,7 @@ class TSystemTNSE3D_ALE : public TSystemNSE3D
     TSquareMatrix3D **SqmatrixM11, **SqmatrixM12, **SqmatrixM13, 
                     **SqmatrixM21, **SqmatrixM22, **SqmatrixM23,
                     **SqmatrixM31, **SqmatrixM32, **SqmatrixM33;
-
-#ifdef __PRIVATE__  
+  
     /** sqstructureG of the  vms projection matrix */
     TSquareStructure3D *sqstructureL;
 
@@ -75,7 +74,6 @@ class TSystemTNSE3D_ALE : public TSystemNSE3D
 
     /** L -  mat for VMS   */
     TSquareMatrix3D *sqmatrixL, **MatricesL;
-#endif
      
     // Assembling rhs*/
     TAssembleMat3D *RhsOnlyAssemble;
@@ -175,9 +173,7 @@ class TSystemTNSE3D_ALE : public TSystemNSE3D
     /** constructor */
      TSystemTNSE3D_ALE(int N_levels, TFESpace3D **velocity_fespace, TFESpace3D **presssure_fespace, TFEVectFunct3D **velocity, 
                        TFEFunction3D **pressure, double **sol, double **rhs,  int disctype, int nsetype, int solver,
-#ifdef __PRIVATE__  
-                       TFESpace3D **Projection_space,
-#endif    
+                       TFESpace3D **Projection_space, 
                        TFESpace3D ** gridFESpace, TFEVectFunct3D **meshVelocity, bool conservativeale);
      
     /** destrcutor */

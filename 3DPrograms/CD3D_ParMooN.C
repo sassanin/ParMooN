@@ -274,24 +274,7 @@ int main(int argc, char* argv[])
     mg_level = LEVELS;
     ORDER = TDatabase::ParamDB->ANSATZ_ORDER;
    }
-   
-  if(TDatabase::ParamDB->SOLVER_TYPE==GMG)
-   {
-#ifdef _MPI  
-    if(rank == out_rank)
-    {
-#endif 
-    OutPut("=======================================================" << endl);
-    OutPut("======           GEOMETRY  LEVEL ");
-    OutPut(LEVELS-1 << "              ======" << endl);
-    OutPut("======           MULTIGRID LEVEL ");
-    OutPut(mg_level-1 << "              ======" << endl);
-    OutPut("=======================================================" << endl);   
-#ifdef _MPI 
-    }
-#endif 
-   }
-    
+       
   Scalar_FeSpaces = new TFESpace3D*[LEVELS+1];  
   Scalar_FeFunctions = new TFEFunction3D*[LEVELS+1]; 
   Sol_array = new double*[LEVELS+1];
