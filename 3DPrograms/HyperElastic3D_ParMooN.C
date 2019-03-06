@@ -464,24 +464,24 @@ int main(int argc, char* argv[])
 #endif
     printf("SystemMatrix constructed\n");
     
-//     if(profiling){
-// #ifdef _MPI
-//       end_int = MPI_Wtime();
-// #else
-//       end_int = GetTime();
-// #endif
-//       total_int = end_int-start_int;
-//     }
-// 
-//     if(profiling){
-// #ifdef _MPI
-//       start_assembling_solving = MPI_Wtime();
-// #else
-//       start_assembling_solving = GetTime();
-// #endif
-//     }    
-// 
-//     // assemble the system matrix with given sol and rhs 
+    if(profiling){
+#ifdef _MPI
+      end_int = MPI_Wtime();
+#else
+      end_int = GetTime();
+#endif
+      total_int = end_int-start_int;
+    }
+
+    if(profiling){
+#ifdef _MPI
+      start_assembling_solving = MPI_Wtime();
+#else
+      start_assembling_solving = GetTime();
+#endif
+    }    
+
+    // assemble the system matrix with given sol and rhs 
 //     SystemMatrix->Assemble();
 //       
 //     // calculate the residual

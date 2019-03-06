@@ -92,7 +92,7 @@ class TSystemHyperElast3D
     
     double **SolArray, **RhsArray, *RHSs[3];
 
-    TFESpace3D *fesp[4], *fesprhs[3], *fesp_aux[1];
+    TFESpace3D *fesp[1], *fesprhs[3], *fesp_aux[1];
     TFEFunction3D *fefct[7], **fefct_aux;
   
     // Assembling */

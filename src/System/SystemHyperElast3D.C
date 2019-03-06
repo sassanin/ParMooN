@@ -16,7 +16,7 @@
 #    GNU Affero General Public License for more details.
 #
 #    You should have received a copy of the GNU Affero General Public License
-#    along with ParMooN.  If not, see <http://www.gnu.org/licenses/>.
+#    along with ParMooN. If not, see <http://www.gnu.org/licenses/>.
 #
 #    If your company is selling a software using ParMooN, please consider 
 #    the option to obtain a commercial license for a fee. Please send 
@@ -69,7 +69,7 @@
 // #include <MooNMD_Io.h>
 
 void Galerkin3D(double Mult, double *coeff, double *param, double hK, double **OrigValues, int *N_BaseFuncts, double ***LocMatrices, double **LocRhs);
-void HyperParamsVelo_GradVelo3D(double *in, double *out);
+void HyperParamsVelo(double *in, double *out);
 
 TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace, TFEVectFunct3D **displacement, double **sol, double **rhs, int disctype, int solver)
 {
@@ -296,6 +296,8 @@ TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace
     OutPut( "pressure :: total own dofs over all sub domains : " << problemSize << endl);
 #endif
     
+  
+    fefct_aux = new  TFEFunction3D*[N_levels*6]; 
     Hyperaux = new TAuxParam3D*[N_levels];
     Hyperaux_error = new TAuxParam3D*[N_levels];    
 
@@ -305,7 +307,7 @@ TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace
     Hyperaux[i] =  NULL;         
    }
    
-}
+} // TSystemHyperElast3D
 
 // TSystemHyperElast3D::~TSystemHyperElast3D()
 // {
@@ -385,127 +387,47 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
 
       N_Rhs = 3;
       N_FESpaces = 1;   
- 
       N_U_Current = U_Space[i]->GetN_DegreesOfFreedom();   
       
       this->InitHyperAuxParm(i);
-      
+           
+      fesp[0] =  U_Space[i];
+ 
+      fefct[0] = Displacement[i]->GetComponent(0);
+      fefct[1] = Displacement[i]->GetComponent(1);
+      fefct[2] = Displacement[i]->GetComponent(2);      
+     
+      fesprhs[0] =  U_Space[i];
+      fesprhs[1] =  U_Space[i];
+      fesprhs[2] =  U_Space[i];
 
-// 
-//       fesp[0] =  U_Space[i];
-//       fesp[1] =  P_Space[i];
-//       
-//       fefct[0] = Velocity[i]->GetComponent(0);
-//       fefct[1] = Velocity[i]->GetComponent(1);
-//       fefct[2] = Velocity[i]->GetComponent(2);      
-//      
-//       fesprhs[0] =  U_Space[i];
-//       fesprhs[1] =  U_Space[i];
-//       fesprhs[2] =  U_Space[i];
-// 
-//       RHSs[0] = RhsArray[i];
-//       RHSs[1] = RhsArray[i] + N_U_Current;
-//       RHSs[2] = RhsArray[i] + 2*N_U_Current;
-//       RHSs[3] = RhsArray[i] + 3*N_U_Current;
-//       
-//      // array of assemble objects
-//      AMatRhsAssemble[i] = new TAssembleMat3D(N_FESpaces, fesp, N_SquareMatrices, SQMATRICES, N_RectMatrices, MATRICES,
-//                               N_Rhs, RHSs, fesprhs, DiscreteFormARhs, BoundaryConditions, BoundaryValues, NSEaux[i]);
-//      AMatRhsAssemble[i]->Init();    
-//      
+      RHSs[0] = RhsArray[i];
+      RHSs[1] = RhsArray[i] + N_U_Current;
+      RHSs[2] = RhsArray[i] + 2*N_U_Current;
+ 
+  
+     // array of assemble objects
+     AMatRhsAssemble[i] = new TAssembleMat3D(N_FESpaces, fesp, N_SquareMatrices, SQMATRICES, 0, NULL,
+                                             N_Rhs, RHSs, fesprhs, DiscreteFormARhs, BoundaryConditions, BoundaryValues, Hyperaux[i]);
+     AMatRhsAssemble[i]->Init();    
+     
 //      if(TDatabase::ParamDB->INTERFACE_FLOW)
 //       {
 //        this->FindFreeSurfJoints(i, 0);
 //       }
-//         
-// #ifdef _MPI
-//    if(i == N_Levels-1) {
-//     if(SOLVER == DIRECT)
-//      {
-//       DS = new TParDirectSolver(ParComm_U[N_Levels-1],ParComm_P[N_Levels-1],SQMATRICES,MATRICES);
-//      }
-//    }
-// #endif
-// 
-//  //    ===============================================================================================================
-//  //    set the nonliner matrices
-//      switch(NSEType)
-//        {
-//         case 1:
-//         case 2:
-//           SQMATRICES[0] = SqmatrixA11[i];
-//           N_SquareMatrices = 1;
-//         break;
-// 
-//         case 3:
-//         case 4:
-//           if (TDatabase::ParamDB->SC_NONLIN_ITE_TYPE_SADDLE==0)
-//            {
-//             SQMATRICES[0] = SqmatrixA11[i];
-//             SQMATRICES[1] = SqmatrixA22[i];
-//             SQMATRICES[2] = SqmatrixA33[i];
-//             N_SquareMatrices = 3;
-//            }
-//           else
-//            {
-//             // Newton method
-//             cout<< "Newton method not tested " <<endl;
-//             exit(0);
-//            }
-// 
-//          break;
-//         } // switch(NSEType)
-//             
-//       N_RectMatrices = 0;          
-//       N_Rhs = 0;
-//       N_FESpaces = 1;
-//      
-//      AMatAssembleNonLinear[i] = new TAssembleMat3D(N_FESpaces, fesp, N_SquareMatrices, SQMATRICES, N_RectMatrices, NULL,
-//                               N_Rhs, NULL, NULL, DiscreteFormNL, BoundaryConditions, BoundaryValues, NSEaux[i]);
-//      AMatAssembleNonLinear[i]->Init();       
-//      
-//      //===============================================================================================================
-// //      // set the slip with friction assemble matrices
-// //        if (TDatabase::ParamDB->INTERNAL_SLIP_WITH_FRICTION >= 1)
-// //         {
-// //          if(NSEType <4)
-// //           {
-// //            OutPut("For slip with friction bc NSTYPE 4 is necessary !!!!! " << endl);
-// //            exit(4711);
-// //           }
-//           
-// //           // prepare everything for the assembling of slip with friction bc
-// //           // on all levels
-// //           N_FESpaces = 1;
-// //           N_SquareMatrices = 9;
-// //           N_RectMatrices = 0;
-// //           N_Rhs = 3; 
-// //       
-// //           SQMATRICES[0] = SqmatrixA11[i];
-// //           SQMATRICES[1] = SqmatrixA22[i];
-// //           SQMATRICES[2] = SqmatrixA33[i];
-// //           SQMATRICES[3] = SqmatrixA12[i];
-// //           SQMATRICES[4] = SqmatrixA13[i];
-// //           SQMATRICES[5] = SqmatrixA21[i];
-// //           SQMATRICES[6] = SqmatrixA23[i];
-// //           SQMATRICES[7] = SqmatrixA31[i];
-// //           SQMATRICES[8] = SqmatrixA32[i];
-// // 
-// //           Assemble3DSlipBC(N_FESpaces, fesp,
-// //             N_SquareMatrices, SQMATRICES,
-// //             N_RectMatrices, NULL,
-// //             N_Rhs, RHSs, fesprhs,
-// //             NULL,
-// //             BoundaryConditions,
-// //             BoundaryValues,
-// //             NSEaux);     
-// //      
-//      
-// // 	} // if (TDatabase::ParamDB->INTERNAL_SLIP_WITH_FRICTION >= 1)
-//      //===============================================================================================================     
-//      // initialize solver
-//        if(SOLVER==GMG)
-//         {       
+        
+#ifdef _MPI
+   if(i == N_Levels-1) {
+    if(SOLVER == DIRECT)
+     {
+      DS = new TParDirectSolver(ParComm_U[N_Levels-1], ParComm_P[N_Levels-1], SQMATRICES, NULL);
+     }
+   }
+#endif
+    
+     // initialize solver
+       if(SOLVER==GMG)
+        {       
 //          //setup the multigrid solver
 //          alpha[0] = TDatabase::ParamDB->SC_SMOOTH_DAMP_FACTOR_SADDLE;
 //          alpha[1] = TDatabase::ParamDB->SC_GMG_DAMP_FACTOR_SADDLE;  
@@ -573,10 +495,10 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
 //               MG->AddLevel(MGLevel);
 //           break;	
 //         } //  switch(NSEType)
-//        }  // if(SOLVER==GMG)     
+       }  // if(SOLVER==GMG)     
      } // for(i=Start_Level;i<N_Levels;i++)      
 //               
-// //  cout << " TSystemNSE3D::Init done ! " << endl; 
+ cout << " TSystemHyperElast3D::Init done ! " << endl; 
               
 } // TSystemHyperElast3D::Init
 
@@ -1135,29 +1057,29 @@ void TSystemHyperElast3D::InitHyperDiscreteForms(TDiscreteForm3D *DiscreteFormGa
 
 void TSystemHyperElast3D::InitHyperAuxParm(int i)
 {
-  int Hyper_FESpacesVelo_GradVelo = 1;
-  int Hyper_FctVelo_GradVelo = 3;
-  int Hyper_ParamFctVelo_GradVelo = 1;
-  int Hyper_FEValuesVelo_GradVelo = 12;
-  int Hyper_ParamsVelo_GradVelo = 15;
-  int FEFctIndexVelo_GradVelo[12] = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
-  MultiIndex3D FEMultiIndexVelo_GradVelo[12] = { D000, D000, D000, 
-                                                 D100, D100, D100,
-                                                 D010, D010, D010,
-                                                 D001, D001, D001};
-ParamFct *FctVelo_GradVelo[1] = { HyperParamsVelo_GradVelo3D };
-int BeginParamVelo_GradVelo[1] = { 0 };
-    
-      fesp_aux[0] =  U_Space[i];
-       
-      fefct_aux[i*6 ] = Displacement[i]->GetComponent(0);
-      fefct_aux[i*6+1] = Displacement[i]->GetComponent(1);
-      fefct_aux[i*6+2] = Displacement[i]->GetComponent(2);
+  int Hyper_N_FESpace = 1;
+  int Hyper_N_FEFunction = 3;
+  int Hyper_N_ParamFct = 1;
+  int Hyper_N_FEValues = 12;
+  int Hyper_N_ParamValues = 15;
+  int Hyper_FEFctIndex[12] = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+  int Hyper_BeginParam[1] = { 0 };  
+  MultiIndex3D Hyper_FEMultiIndex[12] = { D000, D000, D000, D100, D100, D100,
+                                          D010, D010, D010, D001, D001, D001 };  
+                                      
+                                          
+  ParamFct *Hyper_ParamFct[1] = { HyperParamsVelo};
 
-      
-      Hyperaux[i] =  new TAuxParam3D(Hyper_FESpacesVelo_GradVelo, Hyper_FctVelo_GradVelo, Hyper_ParamFctVelo_GradVelo, Hyper_FEValuesVelo_GradVelo,
-                                fesp_aux, fefct_aux+(i*6), FctVelo_GradVelo, FEFctIndexVelo_GradVelo, FEMultiIndexVelo_GradVelo,
-                                 Hyper_ParamsVelo_GradVelo, BeginParamVelo_GradVelo);
+  
+  fesp_aux[0] =  U_Space[i];
+     
+  fefct_aux[i*6 ] = Displacement[i]->GetComponent(0);
+  fefct_aux[i*6+1] = Displacement[i]->GetComponent(1);
+  fefct_aux[i*6+2] = Displacement[i]->GetComponent(2);
+
+  Hyperaux[i] =  new TAuxParam3D(Hyper_N_FESpace, Hyper_N_FEFunction, Hyper_N_ParamFct, Hyper_N_FEValues,
+                                fesp_aux, fefct_aux+(i*6), Hyper_ParamFct, Hyper_FEFctIndex, Hyper_FEMultiIndex,
+                                Hyper_N_ParamValues, Hyper_BeginParam);
     
 }
 
@@ -1267,12 +1189,28 @@ void Galerkin3D(double Mult, double *coeff,
 
 
 
-void HyperParamsVelo_GradVelo3D(double *in, double *out)
+void HyperParamsVelo(double *in, double *out)
 {
     
-    
-    
-    
+  out[0] = in[3]; // u1old
+  out[1] = in[4]; // u2old
+  out[2] = in[5]; // u3old
+
+  out[3] = in[6]; // D1u1
+  out[4] = in[7]; // D1u2
+  out[5] = in[8]; // D1u3
+  
+  out[6] = in[9]; // D2u1
+  out[7] = in[10]; // D2u2
+  out[8] = in[11]; // D2u3
+  
+  out[9] = in[12]; // D3u1
+  out[10] = in[13]; // D3u2
+  out[11] = in[14]; // D3u3
+
+  out[12] = in[0]; // x - coordinate  
+  out[13] = in[1]; // y - coordinate  
+  out[14] = in[2]; // z - coordinate 
     
 }
 
