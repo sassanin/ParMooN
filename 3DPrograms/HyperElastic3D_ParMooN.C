@@ -444,7 +444,6 @@ int main(int argc, char* argv[])
 // SystemMatrix construction and solution
 //======================================================================  
 
-
     if(profiling){
 #ifdef _MPI
       start_int = MPI_Wtime();
@@ -462,7 +461,7 @@ int main(int argc, char* argv[])
 #ifdef _MPI
     if(rank==0)
 #endif
-    printf("SystemMatrix constructed\n");
+    printf("SystemMatrix constructed \n");
     
     if(profiling){
 #ifdef _MPI

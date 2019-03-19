@@ -9133,6 +9133,283 @@ double UltraLocalErrorSmooth(TFEFunction2D *uh, DoubleFunct2D *ExactU,
   return error;
 } // UltraLocalProjection
 
+
+
+
+// stabilisation of full gradient (velocity or pressure)
+void PatchProjection(void* A)
+{
+//   int i,j,k,l,m,n;
+//   int N_Cells;
+//   int *GlobalNumbers, *BeginIndex, *DOF;
+//   int CellOrder, CoarseOrder;
+//   int N_CoarseDOF, N_DOF;
+//   TCollection *Coll;
+//   TFESpace2D *fespace;
+//   FE2D CurrEleID, UsedElements[2];
+//   int N_UsedElements;
+//   TFE2D *CurrentElement, *CoarseElement;
+//   TBaseFunct2D *BF, *CoarseBF;
+//   BaseFunct2D BF_ID, CoarseBF_ID;
+//   TBaseCell *cell;
+//   Shapes shapetype;
+//   bool SecondDer[2] = { false, false };
+//   int N_Points;
+//   double *xi, *eta, *weights;
+//   double X[MaxN_QuadPoints_2D], Y[MaxN_QuadPoints_2D];
+//   double AbsDetjk[MaxN_QuadPoints_2D];
+//   double G[MaxN_BaseFunctions2D*MaxN_BaseFunctions2D];
+//   double Gsave[MaxN_BaseFunctions2D*MaxN_BaseFunctions2D];
+//   double H[2*MaxN_BaseFunctions2D*MaxN_BaseFunctions2D];
+//   double P[2*MaxN_BaseFunctions2D*MaxN_BaseFunctions2D];
+//   double **CoarseValues, *CoarseValue;
+//   double **ChildValuesX, *ChildValueX;
+//   double **ChildValuesY, *ChildValueY;
+//   double **PCValues;
+//   double *PCValue;
+//   double w, val;
+//   double LocMatrix[MaxN_BaseFunctions2D*MaxN_BaseFunctions2D];
+//   double s;
+//   int i1, i2;
+//   double hK;
+//   int ActiveBound, dof;
+//   int p, end;
+//   int *RowPtr, *KCol;
+//   double *Entries;
+//   int OrderDiff;
+//   double lpcoeff, lpexponent;
+// 
+//   if(!(TDatabase::ParamDB->LP_FULL_GRADIENT) && !(ForPressure))
+//   {
+//     OutPut("Local projection stabilization is implemented only for full gradient!" << endl);
+//     exit(-1);
+//   }
+// 
+//   if(ForPressure)
+//   {
+//     lpcoeff = -(TDatabase::ParamDB->LP_PRESSURE_COEFF);
+//     lpexponent = TDatabase::ParamDB->LP_PRESSURE_EXPONENT;
+//     OrderDiff = TDatabase::ParamDB->LP_PRESSURE_ORDER_DIFFERENCE;
+//   }
+//   else
+//   {
+//     lpcoeff = TDatabase::ParamDB->LP_FULL_GRADIENT_COEFF;
+//     lpexponent = TDatabase::ParamDB->LP_FULL_GRADIENT_EXPONENT;
+//     OrderDiff = TDatabase::ParamDB->LP_FULL_GRADIENT_ORDER_DIFFERENCE;
+//   }
+// 
+//   if(ForPressure)
+//   {
+//     fespace = (TFESpace2D*)(((TMatrix2D *)A)->GetStructure()->GetTestSpace());
+//     ActiveBound = -1;
+//     RowPtr = ((TMatrix2D *)A)->GetRowPtr();
+//     KCol = ((TMatrix2D *)A)->GetKCol();
+//     Entries = ((TMatrix2D *)A)->GetEntries();
+//     // cout << "for pressure" << endl;
+//   }
+//   else
+//   {
+//     fespace = ((TSquareMatrix2D *)A)->GetFESpace();
+//     ActiveBound = fespace->GetActiveBound();
+//     RowPtr = ((TSquareMatrix2D *)A)->GetRowPtr();
+//     KCol = ((TSquareMatrix2D *)A)->GetKCol();
+//     Entries = ((TSquareMatrix2D *)A)->GetEntries();
+// //     cout << "not for pressure" << endl;
+//   }
+// 
+//   
+//   Coll = fespace->GetCollection();
+//   N_Cells = Coll->GetN_Cells();
+// 
+//   BeginIndex = fespace->GetBeginIndex();
+//   GlobalNumbers = fespace->GetGlobalNumbers();
+// 
+//   // initialise ClipBoard
+//   for(i=0;i<N_Cells;i++)
+//     Coll->GetCell(i)->SetClipBoard(i);
+// 
+//   for(i=0;i<N_Cells;i++)
+//   {
+//     cell = Coll->GetCell(i);
+//     hK = cell->GetDiameter();
+// 
+//     CurrEleID = fespace->GetFE2D(i, cell);
+//     CurrentElement = TFEDatabase2D::GetFE2D(CurrEleID);
+// 
+//     BF = CurrentElement->GetBaseFunct2D();
+//     BF_ID = BF->GetID();
+//     N_DOF = BF->GetDimension();
+// 
+//     CoarseOrder = BF->GetAccuracy() - OrderDiff;
+//     // cout << "CoarseOrder: " << CoarseOrder << endl;
+// 
+//     UsedElements[0] = GetElement2D(cell, CoarseOrder);
+// 
+//     // approximation space (index 1) and projection space (index 0)
+//     N_UsedElements = 2;
+//     UsedElements[1] = CurrEleID;
+// 
+//     CoarseElement = TFEDatabase2D::GetFE2D(UsedElements[0]);
+//     CoarseBF = CoarseElement->GetBaseFunct2D();
+//     CoarseBF_ID = CoarseBF->GetID();
+// 
+//     // quadrature formula on cell
+//     TFEDatabase2D::GetOrig(N_UsedElements, UsedElements,
+//                            Coll, cell, SecondDer,
+//                            N_Points, xi, eta, weights, X, Y, AbsDetjk);
+// 
+//     N_CoarseDOF = CoarseBF->GetDimension();
+//     CoarseValues = TFEDatabase2D::GetOrigElementValues(CoarseBF_ID, D00);
+// 
+//     memset(G, 0, N_CoarseDOF*N_CoarseDOF*SizeOfDouble);
+// 
+//     for(j=0;j<N_Points;j++)
+//     {
+//       CoarseValue = CoarseValues[j];
+//       w = AbsDetjk[j]*weights[j];
+//       for(k=0;k<N_CoarseDOF;k++)
+//       {
+//         val = w*CoarseValue[k];
+//         for(l=0;l<N_CoarseDOF;l++)
+//         {
+//           G[k*N_CoarseDOF+l] += val*CoarseValue[l];
+//         } // end for l
+//       } // end for k
+//     } // end for j
+// 
+//     // Hack: to deal with D_h = {0}
+//     if(N_CoarseDOF == 1 && fabs(G[0])<1e-10)
+//       G[0] = 1;
+// 
+//     // save G for later use
+//     memcpy(Gsave, G, N_CoarseDOF*N_CoarseDOF*SizeOfDouble);
+//     /*
+//     for(j=0;j<N_CoarseDOF;j++)
+//       for(k=0;k<N_CoarseDOF;k++)
+//         cout << j << " " << k << " " << G[N_CoarseDOF*j+k] << endl;
+//     */
+// 
+//     PCValues = TFEDatabase2D::GetOrigElementValues(CoarseBF_ID, D00);
+// 
+//     ChildValuesX = TFEDatabase2D::GetOrigElementValues(BF_ID, D10);
+//     ChildValuesY = TFEDatabase2D::GetOrigElementValues(BF_ID, D01);
+// 
+//     memset(H, 0, N_CoarseDOF*2*N_DOF*SizeOfDouble);
+// 
+//     memset(LocMatrix, 0, N_DOF*N_DOF*SizeOfDouble);
+// 
+//     for(j=0;j<N_Points;j++)
+//     {
+//       PCValue = PCValues[j];
+//       ChildValueX = ChildValuesX[j];
+//       ChildValueY = ChildValuesY[j];
+//       w = AbsDetjk[j]*weights[j];
+//       for(k=0;k<N_CoarseDOF;k++)
+//       {
+//         val = w*PCValue[k];
+//         for(l=0;l<N_DOF;l++)
+//         {
+//           H[k*2*N_DOF+l      ] += val*ChildValueX[l];
+//           H[k*2*N_DOF+l+N_DOF] += val*ChildValueY[l];
+//         } // end for l
+//       } // end for k
+// 
+//       // grad-grad matrix
+//       for(k=0;k<N_DOF;k++)
+//       {
+//         for(l=0;l<N_DOF;l++)
+//         {
+//           LocMatrix[k*N_DOF+l] += w*( ChildValueX[k]*ChildValueX[l]
+//                                      +ChildValueY[k]*ChildValueY[l]);
+//         }
+//       }
+//     } // end for j
+//     memcpy(P, H, N_CoarseDOF*2*N_DOF*SizeOfDouble);
+// 
+//     /*
+//     cout << "vor" << endl;
+//     for(j=0;j<N_CoarseDOF;j++)
+//       for(k=0;k<2*N_DOF;k++)
+//         cout << j << " " << k << " " << H[j*2*N_DOF+k] << endl;
+//     */
+// 
+//     SolveMultipleSystemsNew(G, H, N_CoarseDOF, N_CoarseDOF, 2*N_DOF, 2*N_DOF);
+// 
+//     /*
+//     cout << "nach" << endl;
+//     for(j=0;j<N_CoarseDOF;j++)
+//       for(k=0;k<2*N_DOF;k++)
+//         cout << j << " " << k << " " << H[j*2*N_DOF+k] << endl;
+//     */
+// 
+//     // proj-proj coupling
+//     for(l=0;l<N_DOF;l++)
+//     {
+//       for(m=0;m<N_DOF;m++)
+//       {
+//         s = 0;
+//         for(i1=0;i1<N_CoarseDOF;i1++)
+//           for(i2=0;i2<N_CoarseDOF;i2++)
+//             s += Gsave[i1*N_CoarseDOF+i2]*( H[i1*2*N_DOF+l      ]*H[i2*2*N_DOF+m      ]
+//                                            +H[i1*2*N_DOF+l+N_DOF]*H[i2*2*N_DOF+m+N_DOF]);
+//         LocMatrix[l*N_DOF+m] += s;
+//       } // endfor m
+//     } // endfor l
+// 
+//     // grad-proj coupling
+//     for(l=0;l<N_DOF;l++)
+//     {
+//       for(m=0;m<N_DOF;m++)
+//       {
+//         s = 0;
+//         for(i2=0;i2<N_CoarseDOF;i2++)
+//         {
+//           s += P[i2*2*N_DOF+l      ] * H[i2*2*N_DOF+m      ];
+//           s += P[i2*2*N_DOF+l+N_DOF] * H[i2*2*N_DOF+m+N_DOF];
+//         }
+//         for(i1=0;i1<N_CoarseDOF;i1++)
+//         {
+//           s += P[i1*2*N_DOF+m      ] * H[i1*2*N_DOF+l      ];
+//           s += P[i1*2*N_DOF+m+N_DOF] * H[i1*2*N_DOF+l+N_DOF];
+//         }
+//         LocMatrix[l*N_DOF+m] -= s;
+//       } // end for m
+//     } // end for l
+// 
+//     /*
+//     cout << "Matrix: " << endl;
+//      for(l=0;l<N_DOF;l++)
+//         for(m=0;m<N_DOF;m++)
+//           cout << l << " " << m << " " << LocMatrix[l*N_DOF+m] << endl;
+//     */
+// 
+//     DOF = GlobalNumbers + BeginIndex[i];
+// 
+//     // add to global matrix
+//     for(l=0;l<N_DOF;l++)
+//     {
+//       dof = DOF[l];
+//       if((dof<ActiveBound) || (ForPressure))
+//       {
+//         for(m=0;m<N_DOF;m++)
+//         {
+//           end = RowPtr[dof+1];
+//           for(p=RowPtr[dof];p<end;p++)
+//             if(KCol[p] == DOF[m])
+//             {
+//               Entries[p] += lpcoeff*pow(hK,lpexponent)*LocMatrix[l*N_DOF+m];
+//               break;
+//             }
+//         } // endfor m
+//       } // endif dof<ActiveBound
+//     } // endfor l
+//   } // endfor i
+} // 
+
+
+
+
+
 #endif // __2D__
 
 // stabilisation of full gradient (velocity or pressure)

@@ -1091,34 +1091,41 @@ void Galerkin3D(double Mult, double *coeff,
                 double **OrigValues, int *N_BaseFuncts,
                 double ***LocMatrices, double **LocRhs)
 {
-  double **MatrixA, **MatrixB1, **MatrixB2, **MatrixB3, **MatrixM;
+  double **MatrixA11, **MatrixA12, **MatrixA13, **MatrixA21, **MatrixA22, **MatrixA23; 
+  double **MatrixA31, **MatrixA32, **MatrixA33;
   double *Rhs1, *Rhs2, *Rhs3, val, val1;
-  double *MatrixRow, *MatrixRow1, *MatrixRow2, *MatrixRow3, *MatrixMRow;
+  double *MatrixRowA11, *MatrixRowA12, *MatrixRowA13, *MatrixRowA21, *MatrixRowA22, *MatrixRowA23;
+  double *MatrixRowA31, *MatrixRowA32, *MatrixRowA33;
   double ansatz100, ansatz010, ansatz001, ansatz000;
   double test000, test100, test010, test001;
   double *Orig0, *Orig1, *Orig2, *Orig3, *Orig4;
-  int i,j, N_U, N_P;
+  int i,j, N_U;
   double c0, c1, c2, c3;
-  double u1, u2, u3;
+  double u1, u2, u3, u1x, u2x, u3x;
+  double u1y, u2y, u3y, u1z, u2z, u3z;
 
-  MatrixA = LocMatrices[0];
-  MatrixM = LocMatrices[1];
-  MatrixB1 = LocMatrices[2];
-  MatrixB2 = LocMatrices[3];
-  MatrixB3 = LocMatrices[4];
+  MatrixA11 = LocMatrices[0];
+  MatrixA12 = LocMatrices[1];
+  MatrixA13 = LocMatrices[2];
+  MatrixA21 = LocMatrices[3];
+  MatrixA22 = LocMatrices[4];
+  MatrixA23 = LocMatrices[5];    
+  MatrixA31 = LocMatrices[6];  
+  MatrixA32 = LocMatrices[7];  
+  MatrixA33 = LocMatrices[8];
+
 
   Rhs1 = LocRhs[0];
   Rhs2 = LocRhs[1];
   Rhs3 = LocRhs[2];
 
   N_U = N_BaseFuncts[0];
-  N_P = N_BaseFuncts[1];
 
   Orig0 = OrigValues[0]; // u_x
   Orig1 = OrigValues[1]; // u_y
   Orig2 = OrigValues[2]; // u_z
   Orig3 = OrigValues[3]; // u
-  Orig4 = OrigValues[4]; // p
+
 
   c0 = coeff[0]; // nu
   c1 = coeff[1]; // f1
@@ -1128,15 +1135,33 @@ void Galerkin3D(double Mult, double *coeff,
   u1 = param[0]; // u1old
   u2 = param[1]; // u2old
   u3 = param[2]; // u3old
+  u1x = param[3]; // u1old
+  u2x = param[4]; // u2old
+  u3x = param[5]; // u3old 
+  u1y = param[6]; // u1old
+  u2y = param[7]; // u2old
+  u3y = param[8]; // u3old  
+  u1z = param[9]; // u1old
+  u2z = param[10]; // u2old
+  u3z = param[11]; // u3old  
 
   for(i=0;i<N_U;i++)
   {
-    MatrixRow = MatrixA[i];
-    MatrixMRow = MatrixM[i];
+    MatrixRowA11 = MatrixA11[i];
+    MatrixRowA12 = MatrixA12[i];
+    MatrixRowA13 = MatrixA13[i];
+    MatrixRowA21 = MatrixA21[i];    
+    MatrixRowA22 = MatrixA22[i];    
+    MatrixRowA23 = MatrixA23[i];    
+    MatrixRowA31 = MatrixA31[i];    
+    MatrixRowA32 = MatrixA32[i];
+    MatrixRowA33 = MatrixA33[i];    
+    
     test100 = Orig0[i];
     test010 = Orig1[i];
     test001 = Orig2[i];
     test000 = Orig3[i];
+    
     val1 = Mult*test000;
     
     Rhs1[i] += val1*c1;
@@ -1150,41 +1175,22 @@ void Galerkin3D(double Mult, double *coeff,
       ansatz001 = Orig2[j];
       ansatz000 = Orig3[j];
        
-      val  = c0*(test100*ansatz100+test010*ansatz010+
-                 test001*ansatz001);
-      val += (u1*ansatz100+u2*ansatz010+u3*ansatz001)*test000;
-      MatrixRow[j] += Mult * val;
+      val  = c0*(test100*ansatz100+test010*ansatz010+ test001*ansatz001);
+//       val += (u1*ansatz100+u2*ansatz010+u3*ansatz001)*test000;
+      MatrixRowA11[j] += Mult * val;
 
-      val = ansatz000*test000;
-      MatrixMRow[j] += Mult * val;
+//       MatrixRowA12 +=
+//       MatrixRowA13 +=      
+//       MatrixRowA21 +=           
+//       MatrixRowA22 +=           
+//       MatrixRowA23 +=           
+//       MatrixRowA31 +=           
+//       MatrixRowA32 +=           
+//       MatrixRowA33 +=           
+      
     } // endfor j
   } // endfor i
 
-  for(i=0;i<N_P;i++)
-  {
-    MatrixRow1 = MatrixB1[i];
-    MatrixRow2 = MatrixB2[i];
-    MatrixRow3 = MatrixB3[i];
-
-    test000 = Orig4[i];
-    val1 = Mult*test000;
-    
-    for(j=0;j<N_U;j++)
-    {
-      ansatz100 = Orig0[j];
-      ansatz010 = Orig1[j];
-      ansatz001 = Orig2[j];
-
-      val = -val1*ansatz100;
-      MatrixRow1[j] += val;
-
-      val = -val1*ansatz010;
-      MatrixRow2[j] += val;
-
-      val = -val1*ansatz001;
-      MatrixRow3[j] += val;
-    } // endfor j
-  } // endfor i
 }
 
 
