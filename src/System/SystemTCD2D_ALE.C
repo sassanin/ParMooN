@@ -45,6 +45,7 @@
 #include <LinAlg.h>
 #include <FreeSurface2D.h>
 #include <CDSystemTimeDG_1.h>
+#include <LocalProjection.h>
 
 TSystemTCD2D_ALE::TSystemTCD2D_ALE(TFESpace2D *fespace, int disctype, int solver, TFESpace2D *gridFESpace, TFEVectFunct2D *MeshVelocity, 
                                                        bool conservativeale) : TSystemTCD2D(fespace,  disctype, solver)
@@ -406,7 +407,7 @@ void TSystemTCD2D_ALE::AssembleMRhs(double *sol, double *rhs)
 
   TFESpace2D *fesp[2], *ferhs[1];
   TFEFunction2D  *fefct[4];
-  TAuxParam2D *aux;
+//   TAuxParam2D *aux;
   
     N_DOF = FeSpace->GetN_DegreesOfFreedom();
     N_Active =  FeSpace->GetActiveBound();
@@ -464,7 +465,7 @@ void TSystemTCD2D_ALE::AssembleMRhs(double *sol, double *rhs)
 //         OutPut("MatM-Sol " << Ddot(N_DOF, defect, defect ) << endl);  
 //        OutPut("MatM-Sol " << Ddot(N_DOF, sol, sol ) << endl); 
   
-//     cout << " AssembleMRhs " << endl;  
+//     cout << " AssembleMRhs " << TDatabase::ParamDB->REACTOR_P28 << endl;  
      
 } // TSystemMatScalar2D::AssembleMRhs 
 
@@ -517,6 +518,20 @@ void TSystemTCD2D_ALE::AssembleMARhs(double *sol, double *rhs)
                BoundaryValues,
                Aux_ALE);
      
+     // apply local projection stabilization method
+     if(Disctype==LOCAL_PROJECTION && TDatabase::ParamDB->LP_FULL_GRADIENT>0)
+      {
+       if(TDatabase::ParamDB->LP_FULL_GRADIENT==1)
+        { 
+         UltraLocalProjection(sqmatrixA, FALSE);
+        }
+       else
+        {
+         OutPut("Check! LP_FULL_GRADIENT needs to be one to use LOCAL_PROJECTION" << endl);
+         exit(4711);;
+        }
+      }
+      
       // copy Dirichlet values from rhs into sol
       memcpy(sol+N_Active, rhs+N_Active, (N_DOF - N_Active)*SizeOfDouble);  
       
@@ -531,9 +546,9 @@ void TSystemTCD2D_ALE::AssembleMARhs(double *sol, double *rhs)
 //         OutPut("MatM-Sol " << Ddot(N_DOF, defect, defect ) << endl);  
 //        OutPut("MatM-Sol " << Ddot(N_DOF, sol, sol ) << endl); 
   
-//     cout << " AssembleMARhs " << endl;
+//     cout << " AssembleMRhs " << TDatabase::ParamDB->REACTOR_P28 << endl;  
 //       exit(0);  
-  
+//   
 } // TSystemMatScalar2D::AssembleMARhs 
 
 

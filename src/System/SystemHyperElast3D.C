@@ -1085,7 +1085,6 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
 
 
 
-
 void Galerkin3D(double Mult, double *coeff, 
                 double *param, double hK, 
                 double **OrigValues, int *N_BaseFuncts,

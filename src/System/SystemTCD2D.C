@@ -237,6 +237,21 @@ void TSystemTCD2D::AssembleARhs(TAuxParam2D *aux, double *sol, double *rhs)
                BoundaryValues,
                aux);
      
+     // apply local projection stabilization method
+     if(Disctype==LOCAL_PROJECTION && TDatabase::ParamDB->LP_FULL_GRADIENT>0)
+      {
+       if(TDatabase::ParamDB->LP_FULL_GRADIENT==1)
+        { 
+         UltraLocalProjection(sqmatrixA, FALSE);
+        }
+       else
+        {
+         OutPut("Check! LP_FULL_GRADIENT needs to be one to use LOCAL_PROJECTION" << endl);
+         exit(4711);;
+        }
+      }
+      
+      
       // copy Dirichlet values from rhs into sol
       memcpy(sol+N_Active, rhs+N_Active, (N_DOF - N_Active)*SizeOfDouble);  
       

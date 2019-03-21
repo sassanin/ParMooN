@@ -774,13 +774,26 @@ void Assemble2D(int n_fespaces, TFESpace2D **fespaces,
                 // if DG
                 if (N_EdgeDOF==0)
                   break;
+                
+#ifdef __3D__
+                cell->GetVertex(m)->GetCoords(x0, y0, z0);
+                cell->GetVertex((m+1) % N_Joints)->GetCoords(x1, y1, z1);
+#else
+                cell->GetVertex(m)->GetCoords(x0, y0);
+                cell->GetVertex((m+1) % N_Joints)->GetCoords(x1, y1);
+#endif                
                 // read boundary values for each quadrature point
                 for(l=0;l<N_EdgePoints;l++)
                 {
                   s = EdgePoints[l];
                   t = 0.5*(t0*(1-s) + t1*(1+s));
+                  PointValues[l] = 0.5*(x0*(1-s) + x1*(1+s)); // x value
+//                   PointValues[l] = 0.5*(y0*(1-s) + y1*(1+s)); // y value
+
                   BoundaryValue(comp, t, PointValues[l]);
-                }                                 // endfor l
+                }   
+//                 exit(0);
+                // endfor l
                 // compute boundary values for each dof on the
                 // boundary edge with the nodal functionals
 
