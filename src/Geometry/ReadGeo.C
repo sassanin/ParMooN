@@ -3483,7 +3483,7 @@ int TDomain::GmshGen(char *GeoFile)
   double StartX, StartY, StartZ, BoundX, BoundY, BoundZ;   
   char  line[100];
  
-  bool mark;
+  bool mark, Errmark1=FALSE;
   
   TVertex **NewVertices;
   TBaseCell **CellTree, *cell, *neib0, *neib1;  
@@ -3611,10 +3611,21 @@ int TDomain::GmshGen(char *GeoFile)
    //cout << "N_BdComp  " << N_BdComp  <<endl; 
    N_BdPlane=0;
    N_IsoBd =0;
+   
+   if(N_BdComp)
+    {
+     if(UniqueBdMarkers[0]>=1000) Errmark1 = TRUE;   
+    } 
+       
    for(i=0;i<N_BdComp;i++)
     {
       if(UniqueBdMarkers[i]>=1000 && UniqueBdMarkers[i]<2000)
-       {N_BdPlane++;}
+       {
+           N_BdPlane++;
+           if(UniqueBdMarkers[i]==1000) 
+           {Errmark1=FALSE;}
+           
+    }
        else if(UniqueBdMarkers[i]>=2000 && UniqueBdMarkers[i]<3000)
        {N_IsoBd++;}
        else
@@ -3623,6 +3634,12 @@ int TDomain::GmshGen(char *GeoFile)
         exit(-1);          
        }
      }
+ 
+   if(Errmark1)
+    {
+     cerr << " BD ID in Gmsh should start from 1000s (BdPlane) or 2000s (IsoBd)"  << endl;
+      exit(-1);          
+    }
  
    if(UsePRM==0)
     {

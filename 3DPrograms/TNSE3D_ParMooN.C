@@ -89,8 +89,8 @@ double timeC = 0;
 // #include "../Examples/TNSE_3D/test_slip.h"
 // #include "../Examples/TNSE_3D/ChannelObstacle3D.h"
 // #include "../Examples/TNSE_3D/ChannelObstacle3D_slip.h"
-#include "../Examples/TNSE_3D/ChannelObstacle3D_slip_volker.h"
-// #include "../Examples/TNSE_3D/ChannelObstacle3D_freeslip.h"
+// #include "../Examples/TNSE_3D/ChannelObstacle3D_slip_volker.h"
+#include "../Examples/TNSE_3D/ShipHydro.h"
 
 void printall_array ( double * Arr1,double * Arr2, int SizeOfArr )
       {
