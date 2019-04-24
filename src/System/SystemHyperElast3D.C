@@ -89,6 +89,9 @@ TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace
   //set number of multigrid levels
   N_Levels = N_levels;
    
+  cout << " N_levels " << N_levels <<endl;
+//   exit(0);
+//   
   //set the discretization type
   Disctype = disctype;
   
@@ -108,7 +111,7 @@ TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace
   
   N_U = disp_fespace[N_levels-1]->GetN_DegreesOfFreedom();
   N_TotalDOF = 3*N_U;
-  
+       
   N_Active =  disp_fespace[N_levels-1]->GetActiveBound();
   N_DirichletDof = N_U - N_Active;  
  
@@ -299,7 +302,7 @@ TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace
 #endif
     
   
-    fefct_aux = new  TFEFunction3D*[N_levels*6]; 
+    fefct_aux = new  TFEFunction3D*[N_levels*3]; 
     Hyperaux = new TAuxParam3D*[N_levels];
     Hyperaux_error = new TAuxParam3D*[N_levels];    
 
@@ -348,9 +351,36 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
   LinCoeffs[0] = lincoeffs;
   
   /** set the Discreteforms */
-  this->InitHyperDiscreteForms(DiscreteFormGalerkin);
+//   this->InitHyperDiscreteForms(DiscreteFormGalerkin);
+  
+       
+  char GalerkinString[] = "Galerkin";
+  char rhs[] = "rhs";
+  char all[] = "all";
+  
+  DiscreteFormGalerkin = NULL; 
+   
+  int N_Terms = 4;
+  MultiIndex3D Derivatives[4] = { D100, D010, D001, D000};
+  int SpaceNumbers[4] = { 0, 0, 0, 0};
+  int N_Matrices = 9;
+  int RowSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int ColumnSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
+   N_Rhs = 3;
+  int RhsSpace[3] = { 0, 0, 0 };
   
   
+  DiscreteFormGalerkin = new TDiscreteForm3D(GalerkinString, all,  N_Terms, Derivatives, SpaceNumbers,
+                                             N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);         
+  
+
+                 
+      bool *SecondDer;
+      SecondDer = DiscreteFormGalerkin->GetNeeds2ndDerivatives();
+    
+                 cout << " SecondDer " << SecondDer[0] << endl; 
+          
+//                exit(0);
     /** find discrete form */
     switch(Disctype)
        {
@@ -371,6 +401,8 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
      exit(0);
    }
 #endif  
+       
+   
        
    // initilize the assemble    
    for(i=Start_Level;i<N_Levels;i++)
@@ -412,7 +444,7 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
      AMatRhsAssemble[i] = new TAssembleMat3D(N_FESpaces, fesp, N_SquareMatrices, SQMATRICES, 0, NULL,
                                              N_Rhs, RHSs, fesprhs, DiscreteFormARhs, BoundaryConditions, BoundaryValues, Hyperaux[i]);
      AMatRhsAssemble[i]->Init();    
-     
+        
 //      if(TDatabase::ParamDB->INTERFACE_FLOW)
 //       {
 //        this->FindFreeSurfJoints(i, 0);
@@ -537,25 +569,25 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
 // 
 void TSystemHyperElast3D::Assemble()
 {
-//   int i, N_SquareMatrices, N_RectMatrices, N_Rhs, N_FESpaces;
-//   int N_U_Current, N_P_Current, N_Active_Current, N_DirichletDof;
-//     
-//   double alpha[2];
-// 
+  int i, N_SquareMatrices, N_RectMatrices, N_Rhs, N_FESpaces;
+  int N_U_Current,  N_Active_Current, N_DirichletDof;
+    
+  double alpha[2];
+
 //   
-//    for(i=Start_Level;i<N_Levels;i++)
-//     {     
-//       N_U_Current = U_Space[i]->GetN_DegreesOfFreedom();
-//       N_Active_Current  = U_Space[i]->GetActiveBound();     
-//       N_DirichletDof = N_U_Current - N_Active_Current;
-//       N_P_Current = P_Space[i]->GetN_DegreesOfFreedom();      
-//       
-//       // initialize matrices
-//       AMatRhsAssemble[i]->Reset();
-//  
-//       /** assemble */
-//       AMatRhsAssemble[i]->Assemble3D();
-//  
+   for(i=Start_Level;i<N_Levels;i++)
+    {     
+      N_U_Current = U_Space[i]->GetN_DegreesOfFreedom();
+      N_Active_Current  = U_Space[i]->GetActiveBound();     
+      N_DirichletDof = N_U_Current - N_Active_Current;
+ 
+      
+      // initialize matrices
+      AMatRhsAssemble[i]->Reset();
+ 
+      /** assemble */
+      AMatRhsAssemble[i]->Assemble3D();
+ 
 //       /** free surface/interface integration */
 // //       if(TDatabase::ParamDB->INTERFACE_FLOW)
 // //        {      
@@ -634,10 +666,10 @@ void TSystemHyperElast3D::Assemble()
 //       memcpy(SolArray[i]+N_Active_Current, RhsArray[i]+N_Active_Current, N_DirichletDof*SizeOfDouble);
 //       memcpy(SolArray[i]+N_U_Current+N_Active_Current, RhsArray[i]+N_U_Current+N_Active_Current, N_DirichletDof*SizeOfDouble); 
 //       memcpy(SolArray[i]+2*N_U_Current+N_Active_Current, RhsArray[i]+2*N_U_Current+N_Active_Current, N_DirichletDof*SizeOfDouble);     
-//         
-//      } // for(i=Start_Level;i<N_Levels;i++)
-//       
-// 
+        
+     } // for(i=Start_Level;i<N_Levels;i++)
+      
+
     cout << "Test Assemble " << endl; 
     exit(0);
     
@@ -1035,7 +1067,7 @@ void TSystemHyperElast3D::Assemble()
 
 void TSystemHyperElast3D::InitHyperDiscreteForms(TDiscreteForm3D *DiscreteFormGalerkin)
 {
-       
+/*       
   char GalerkinString[] = "Galerkin";
   char rhs[] = "rhs";
   char all[] = "all";
@@ -1053,9 +1085,15 @@ void TSystemHyperElast3D::InitHyperDiscreteForms(TDiscreteForm3D *DiscreteFormGa
   
   
   DiscreteFormGalerkin = new TDiscreteForm3D(GalerkinString, all,  N_Terms, Derivatives, SpaceNumbers,
-                                             N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);  
-    
+                                             N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);         
   
+  
+      bool *SecondDer;
+      SecondDer = DiscreteFormGalerkin->GetNeeds2ndDerivatives();
+    
+                 cout << "DiscreteFormGalerkin SecondDer " << SecondDer[0] << endl; */
+          
+                 
 }
 
 
@@ -1077,12 +1115,12 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
   
   fesp_aux[0] =  U_Space[i];
      
-  fefct_aux[i*6 ] = Displacement[i]->GetComponent(0);
-  fefct_aux[i*6+1] = Displacement[i]->GetComponent(1);
-  fefct_aux[i*6+2] = Displacement[i]->GetComponent(2);
+  fefct_aux[i*3 ] = Displacement[i]->GetComponent(0);
+  fefct_aux[i*3+1] = Displacement[i]->GetComponent(1);
+  fefct_aux[i*3+2] = Displacement[i]->GetComponent(2);
 
   Hyperaux[i] =  new TAuxParam3D(Hyper_N_FESpace, Hyper_N_FEFunction, Hyper_N_ParamFct, Hyper_N_FEValues,
-                                fesp_aux, fefct_aux+(i*6), Hyper_ParamFct, Hyper_FEFctIndex, Hyper_FEMultiIndex,
+                                fesp_aux, fefct_aux+(i*3), Hyper_ParamFct, Hyper_FEFctIndex, Hyper_FEMultiIndex,
                                 Hyper_N_ParamValues, Hyper_BeginParam);
     
 }
@@ -1221,134 +1259,144 @@ void HyperParamsVelo(double *in, double *out)
 
 //Evaluation of Matrix Entries 
 
-double Piola_Kir(double *param, double test100, double test010, double test001, double test000, double ansatz100, double ansatz010, 
-                 double ansatz001, double ansatz000, int row, int col)
+double Piola_Kir(double *param, double test100, double test010, double test001, double test000, double ansatz100, double ansatz010, double ansatz001, double ansatz000, int row, int col)
 {
-  const int c1=1.0;
-  const int c2=1.0;
-  const int D1=1.0;
-  double I[9] = {1, 0, 0, 0,1,0, 0,0,1};
-  
-  double *F = new double[9];
-  for(int i =0; i<=8; i++) F[i] = param[i] + I[i] ;
+ const int c1=1.0;
+ const int c2=1.0;
+ const int D1=1.0;
+	
+ double I[9] = {1, 0, 0, 0,1,0, 0,0,1};
+ double *F = new double[9];
+ double * F_der = new double[9]; 
+ double *C = new double[9];
+ double *C_inv = new double[9];
+ double I_first, I_third, I_inv, I_1_bar, c_ij,S_ij =0, val;
+ double *temp_1 = new double[9];
+ double *temp_2 = new double[9];
+ double *S= new double[9];
+ double *S_der = new double[9];
+ double c_kl, c_ik, c_jl, c_il, c_jk;
+ double entry;
 
-  double *C = new double[9];
-  MatrixMult(F, F, C, 't', 'n');
-
-  double I_first = C[0] +C[4] + C[8];
-
-  //cout<<endl<<"Trace"<<I_first;
-  double *C_copy 	= new double[9];
-  for(int i =0; i<=8; i++)	C_copy[i] = C[i];
-
-  double I_third = MatrixDeterminant(C_copy);
-  //for(int i =0; i<=8; i++)	cout<<C[i]<<" ";
-  delete [] C_copy;
-        
-  double I_inv = pow(I_third, -1.0/3.0);
-  double *C_inv = new double[9];
-  for(int i =0; i<=8; i++) C_inv[i] = C[i];
-
-  MatrixInverse(C_inv);
-  double I_1_bar = I_first * I_inv;
-  double * S= new double[9];
-  for (int i = 0; i < 3; i++){
-    for(int j = 0; j < 3; j++){
-      double c_ij = C_inv[3*j + i];
-      double t = (c1 + c2*I_1_bar - 6*c2)*(I_inv - (I_1_bar*c_ij)/3) + (2 * (I_third-1) * I_third * c_ij)/D1;
-      S[3*j + i] = t;
-     }
+ for(int i =0; i<=8; i++)
+  F[i] = param[3+i] + I[i] ;
+ 
+ MatrixMult(F, F, C, 't', 'n');
+ I_first = C[0] +C[4] + C[8];
+ 
+ memcpy (temp_1, C, sizeof(temp_1)); 	
+ I_third = MatrixDeterminant(temp_1);
+ I_inv = pow(I_third, -1.0/3.0);
+ memcpy (C_inv, C, sizeof(temp_1));
+ MatrixInverse(C_inv);
+ I_1_bar = I_first * I_inv;
+	
+ for (int i = 0; i < 3; i++)
+ {
+  for(int j = 0; j < 3; j++)
+  {
+   c_ij = temp_1[3*j + i];
+   val = (c1 + c2*I_1_bar - 6*c2)*(I_inv - (I_1_bar*c_ij)/3) + (2 * (I_third-1) * I_third * c_ij)/D1;
+   S[3*j + i] = val;
+  }
+ }
+ 
+ if(row==0)
+ {
+  for(int j =0 ; j <3; j++)
+   {
+    switch(j)
+    {			
+     case 0 : val = ansatz100; 
+     break;
+     case 1 : val = ansatz010; 
+     break;				
+     case 2 : val = ansatz001; 
+     break;			 
+    }
+   F_der[3*j + row] = val;
    }
-  double * F_der = new double[9];
-	
-	if(row==0){
-		double val;
-		for(int j =0 ; j <3; j++){
-			switch(j){
-					case 0 : val = ansatz100; break;
-					case 1 : val = ansatz010; break;
-					case 2 : val = ansatz001; break;
-				 }
-				F_der[3*j + row] = val;
-		 }
-	}
-	if(row==1){
-		double val;
-		for(int j =0 ; j <3; j++){
-			switch(j){
-					case 0 : val = ansatz100; break;
-					case 1 : val = ansatz010; break;
-					case 2 : val = ansatz001; break;
-				 }
-				F_der[3*j + row] = val;
-		 }
-	}	
-		
-	if(row==2){
-		double val;
-		for(int j =0 ; j <3; j++){
-			switch(j){
-					case 0 : val = ansatz100; break;
-					case 1 : val = ansatz010; break;
-					case 2 : val = ansatz001; break;
-				 }
-				F_der[3*j + row] = val;
-		 }
-	}
-
-	double *H1 = new double[9];
-        double *H2 = new double[9];
-	MatrixMult(F_der, F, H1, 't', 'n');
-	MatrixMult(F, F_der, H1, 't', 'n');
-	double *H = new double[9];
-	for(int i =0; i<=8; i++) H[i] = H1[i] + H2[i] ;
-	delete [] H1;
-	delete [] H2;
-	
-	double *S_der = new double[9];
-
-	for (int i = 0; i < 3; i++){
-		for(int j = 0; j < 3; j++){	
-			double c_ij = C_inv[3*j +i];
-			double S_ij =0;
-			for(int k =0; k< 3; k++){
-				for(int l=0; l<3 ;l++){
-					double c_kl= C_inv[3*l +k];
-					double c_ik= C_inv[3*k +i];
-					double c_jl= C_inv[3*l +j];
-					double c_il= C_inv[3*l +i];
-					double c_jk= C_inv[3*k +j];
-					double a = 2*c2*(I_inv - I_1_bar*c_ij/3.0)*(I_inv - I_1_bar * c_kl/3.0);
-					double b = (-1.0/3.0) * ( I_inv * c_kl - (I_inv - (-1.0/3.0)*I_1_bar * c_kl)*c_ij 
-							- (1.0/2.0)*(c_ik*c_jl + c_il*c_jk)) * (c1 + 2*c2*I_1_bar- 6*c2);
-					double c = (2/D1)*(I_third*(I_third-1)*c_kl*c_ij + pow(I_third, 2.0)*c_kl*c_ij +(I_third/2.0)*(I_third-1)*(c_ik*c_jl + c_il*c_jk));
-					double val = a + b + c;
-					S_ij += val * H[3*j +i];
-				}
-			}
-
-			S_der[3*j +i] = S_ij;
-		}
-	}
-	double entry;
-	double *G1 = new double[9] ;
-	double *G2 = new double[9] ;
-	MatrixMult(F_der, S, G1, 'n', 'n');
-	MatrixMult(F, S_der, G2, 'n', 'n');
-	double *G = new double[9];
-	for(int i =0; i<=8; i++) G[i] = G1[i] + G2[i] ;
-	delete G1;  delete G2;
-
-	switch(col){
-			case 0: entry = G[3*0 +0]*test100 + G[3*1 +0]*test010 + G[3*2 +0]*test001;
-				break;
-			case 1: entry = G[3*0 +1]*test100 + G[3*1 +1]*test010 + G[3*2 +1]*test001;
-				break;
-			case 2: entry = G[3*0 +2]*test100 + G[3*1 +2]*test010 + G[3*2 +2]*test001;	
-		}
-	delete G;
-	return entry;
-
+ }
+ else if(row==1)
+ {
+  for(int j =0 ; j <3; j++)
+  {
+   switch(j)
+   {
+    case 0 : val = ansatz100; 
+    break;
+    case 1 : val = ansatz010; 
+    break;
+    case 2 : val = ansatz001; 
+    break;
+   }
+   F_der[3*j + row] = val;
+  }
+ }	
+else if(row==2)
+ {
+  for(int j =0 ; j <3; j++)
+  {
+   switch(j)
+   {
+   case 0 : val = ansatz100; 
+   break;
+   case 1 : val = ansatz010; 
+   break;
+   case 2 : val = ansatz001; 
+   break;
+   }
+   F_der[3*j + row] = val;
+  }
+ }
+ MatrixMult(F_der, F, temp_1, 't', 'n');
+ MatrixMult(F, F_der, temp_2, 't', 'n');
+ double *H = new double[9];
+ for(int i =0; i<=8; i++) H[i] = temp_1[i] + temp_2[i] ;
+ 
+ for (int i = 0; i < 3; i++)
+ {
+  for(int j = 0; j < 3; j++)
+  {
+   c_ij = C_inv[3*j +i];
+   S_ij =0;
+   for(int k =0; k< 3; k++)
+   {
+    for(int l=0; l<3 ;l++)
+    {
+     c_kl= C_inv[3*l +k];
+     c_ik= C_inv[3*k +i];
+     c_jl= C_inv[3*l +j];
+     c_il= C_inv[3*l +i];
+     c_jk= C_inv[3*k +j];
+    double a = 2*c2*(I_inv - I_1_bar*c_ij/3.0)*(I_inv - I_1_bar * c_kl/3.0);
+    double b = (-1.0/3.0) * ( I_inv * c_kl - (I_inv - (-1.0/3.0)*I_1_bar * c_kl)*c_ij - (1.0/2.0)*(c_ik*c_jl + c_il*c_jk)) * (c1 + 2*c2*I_1_bar- 6*c2);
+    double c = (2/D1)*(I_third*(I_third-1)*c_kl*c_ij + pow(I_third, 2.0)*c_kl*c_ij +(I_third/2.0)*(I_third-1)*(c_ik*c_jl + c_il*c_jk));
+    val = a + b + c;
+    S_ij += val * H[3*j +i];
+    }
+   }
+   S_der[3*j +i] = S_ij;
+  }
+ }
+ MatrixMult(F_der, S, temp_1, 'n', 'n');
+ MatrixMult(F, S_der, temp_2, 'n', 'n');
+ for(int i =0; i<=8; i++) H[i] = temp_1[i] + temp_2[i] ;
+ switch(col)
+ {
+  case 0: entry = H[3*0 +0]*test100 + H[3*1 +0]*test010 + H[3*2 +0]*test001;				
+  break;
+  case 1: entry = H[3*0 +1]*test100 + H[3*1 +1]*test010 + H[3*2 +1]*test001;
+  break;
+  case 2: entry = H[3*0 +2]*test100 + H[3*1 +2]*test010 + H[3*2 +2]*test001;	
+  break;		
+ }
+ delete [] H;
+ delete [] F;   delete [] F_der;
+ delete [] C;  delete [] C_inv; 
+ delete [] S;   delete [] S_der;
+ return entry;
 }
 
 //End of Piola_Kir function
+

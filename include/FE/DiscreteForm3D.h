@@ -141,7 +141,7 @@ class TDiscreteForm3D
 
     /** return array Needs2ndDerivatives */
     bool *GetNeeds2ndDerivatives()
-    { return Needs2ndDerivatives; };
+    {  return Needs2ndDerivatives; };
 
     /** function for calculating the coefficients */
     CoeffFct3D *GetCoeffFct()

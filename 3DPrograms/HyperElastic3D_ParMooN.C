@@ -439,7 +439,9 @@ int main(int argc, char* argv[])
 
    Output->AddFEVectFunct(u);
         
-// exit(0)
+   
+//    cout << mg_level << endl;
+// exit(0);
 //======================================================================
 // SystemMatrix construction and solution
 //======================================================================  
@@ -456,8 +458,7 @@ int main(int argc, char* argv[])
     
     // initilize the system matrix with the functions defined in Example file
     SystemMatrix->Init(LinCoeffs, BoundCondition, U1BoundValue, U2BoundValue, U3BoundValue);
-//         SystemMatrix->Assemble();
-    
+     
 #ifdef _MPI
     if(rank==0)
 #endif
@@ -481,8 +482,8 @@ int main(int argc, char* argv[])
     }    
 
     // assemble the system matrix with given sol and rhs 
-//     SystemMatrix->Assemble();
-//       
+    SystemMatrix->Assemble();
+      
 //     // calculate the residual
 //     defect = new double[N_TotalDOF];
 //     memset(defect,0,N_TotalDOF*SizeOfDouble);

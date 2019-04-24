@@ -165,12 +165,12 @@ class TSystemHyperElast3D
     void Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCond, BoundValueFunct3D *U1BoundValue, 
               BoundValueFunct3D *U2BoundValue, BoundValueFunct3D *U3BoundValue);
     
-//     /** assemble the system matrix */
-//     void Assemble();
-//     
-//     /** assemble the nonlinear part of the NSE system */
-//     void AssembleNonLinear(double **sol, double **rhs);
-//     
+    /** assemble the system matrix */
+    void Assemble();
+    
+    /** assemble the nonlinear part of the NSE system */
+    void AssembleNonLinear(double **sol, double **rhs);
+    
 //     /** get the resudual of the NSE system */
 //     void GetResidual(double *sol, double *rhs, double *res, double &impuls_residual, double &residual);
 //     
