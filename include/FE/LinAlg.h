@@ -87,6 +87,15 @@ void Dadd(int n, double alpha, double *x);
 /** return Euclidian norm of x */
 double Dnorm(int n, double *x);
 
+/** returns detrminant of a 3x3  matrix passed as double array a where a[i, j] = a(lda*i +j) */
+double MatrixDeterminant(double *a);
+
+/** returns inverse of a 3x3  matrix passed as double array a where a[i, j] = a(lda*i +j) */
+void MatrixInverse(double *a);
+
+/** a 3x3 Mat Mult */
+void MatrixMult(double *a, double *b, double *c, char TRANSA, char TRANSB);
+
 // =======================================================================
 // BLAS 2 
 // =======================================================================

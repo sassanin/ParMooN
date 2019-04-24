@@ -60,6 +60,10 @@ void dopgtr_(char *UPLO, int *n,  double *AP, double *TAU, double *Q, int *LDQ, 
 
 void  dsteqr_(char *compz, int *N, double *D,  double *E, double *Z, int *LDZ, double *work, int *info);
  
+void dgetri_(int *m, double *A, int *lda, int *ipiv, double *WORK, int *LWORK, int *info);
+
+void dgemm_(char *TRANSA, char *TRANSB, int *m, int *n, int *k, double *ALPHA, double *a, int *lda, double *b, int *ldb, double *beta, double *c, int *ldc);
+
 }
 
 // ==========================================================================
@@ -630,3 +634,77 @@ void FindEigenValues(double *ap, char &UPLO, int N_Eqn, char &COMPZ, double *d, 
   delete [] work;
   
 }
+
+
+
+/** calculate the determinant of a 3x3 matrix using Lapack routines*/
+double MatrixDeterminant(double *a)
+{
+  
+  int m, n, lda;
+  int *ipivot, info;
+  char t='n';
+
+  m = 3;
+  n = 3;
+  lda = 3;
+  ipivot = new int[n];
+  double det =1;
+  dgetrf_(&m, &n, a, &lda, ipivot, &info);
+  for(int i=0; i<3 ; i++) det *= a[3*i +i];
+
+  int j;
+  double detp=1.;
+  for( j=0;j<n;j++){
+    if(j+1!=ipivot[j]){
+        // j+1 : following feedback of ead : ipiv is from Fortran, hence starts at 1.
+        // hey ! This is a transpose !
+        detp=-detp;
+    }
+  }
+det = det*detp;
+ 
+  delete ipivot;
+return det;
+}
+
+
+/** calculate the inverse of a 3x3 matrix using Lapack routines*/
+void MatrixInverse(double *a)
+{
+  
+  int m, n, lda;
+  int *ipivot, info, LWORK;
+  double *WORK = new double[3]; 
+  char t='n';
+
+  m = 3;
+  n = 3;
+  lda = 3;
+  LWORK = 3;
+  ipivot = new int[n];
+ 
+  dgetrf_(&m, &n, a, &lda, ipivot, &info);
+  dgetri_(&m, a, &lda, ipivot, WORK, &LWORK, &info );
+  //cout<<"Inverse of passed matrix is :"<<endl;
+  //for(int i =0; i<= 8; i++) cout<<a[i]<<" ";
+  delete ipivot;
+  //return a;
+}
+
+
+/** calculate a 3x3  Matrix-Matrix multiplication*/
+void MatrixMult(double *a, double *b, double *c, char TRANSA, char TRANSB)
+{  
+  
+  int m = 3, n = 3, k = 3;
+  int lda =3, ldb =3, ldc =3;
+  double beta = 1;
+  double ALPHA = 1;
+  //double c[9] = {0,0,0,0,0,0,0,0,0};
+  //cout<<endl<<"Matrix-matrix multiplication is :"<<endl;
+  dgemm_(&TRANSA, &TRANSB, &m, &n, &k, &ALPHA, a, &lda, b, &ldb, &beta, c, &ldc);
+  //for(int i =0; i<= 8; i++) cout<<c[i]<<" ";
+}
+
+
