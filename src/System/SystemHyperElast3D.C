@@ -80,16 +80,11 @@ TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace
  
   /** need it for solver */
   sqmatrices = (TSquareMatrix **)SQMATRICES;
-  
-//    if ((TDatabase::ParamDB->SC_STEP_LENGTH_CONTROL_ALL_SADDLE) || (TDatabase::ParamDB->SC_STEP_LENGTH_CONTROL_FINE_SADDLE))
-//     { N_aux= 4; }
-//    else
-//     { N_aux= 2; }
-    
+      
   //set number of multigrid levels
   N_Levels = N_levels;
    
-  cout << " N_levels " << N_levels <<endl;
+//   cout << " N_levels " << N_levels <<endl;
 //   exit(0);
 //   
   //set the discretization type
@@ -364,7 +359,7 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
   MultiIndex3D Derivatives[4] = { D100, D010, D001, D000};
   int SpaceNumbers[4] = { 0, 0, 0, 0};
   int N_Matrices = 9;
-  int RowSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int RowSpace[9]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
   int ColumnSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
    N_Rhs = 3;
   int RhsSpace[3] = { 0, 0, 0 };
@@ -373,14 +368,6 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
   DiscreteFormGalerkin = new TDiscreteForm3D(GalerkinString, all,  N_Terms, Derivatives, SpaceNumbers,
                                              N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);         
   
-
-                 
-      bool *SecondDer;
-      SecondDer = DiscreteFormGalerkin->GetNeeds2ndDerivatives();
-    
-                 cout << " SecondDer " << SecondDer[0] << endl; 
-          
-//                exit(0);
     /** find discrete form */
     switch(Disctype)
        {
@@ -402,7 +389,11 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
    }
 #endif  
        
-   
+                 
+//       bool *SecondDer;
+//       SecondDer = DiscreteFormARhs->GetNeeds2ndDerivatives();
+//       cout << " SecondDer " << SecondDer[0] << endl; 
+//       exit(0);   
        
    // initilize the assemble    
    for(i=Start_Level;i<N_Levels;i++)
@@ -532,7 +523,7 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
        }  // if(SOLVER==GMG)     
      } // for(i=Start_Level;i<N_Levels;i++)      
 //               
- cout << " TSystemHyperElast3D::Init done ! " << endl; 
+//  cout << " TSystemHyperElast3D::Init done ! " << endl; 
               
 } // TSystemHyperElast3D::Init
 
@@ -585,9 +576,16 @@ void TSystemHyperElast3D::Assemble()
       // initialize matrices
       AMatRhsAssemble[i]->Reset();
  
+//           bool *SecondDer;
+//       SecondDer = DiscreteFormARhs->GetNeeds2ndDerivatives();
+//       cout << " SecondDer " << SecondDer[0] << endl; 
+      
+      
       /** assemble */
       AMatRhsAssemble[i]->Assemble3D();
  
+            cout << "Assemble " << endl;
+      exit(0);
 //       /** free surface/interface integration */
 // //       if(TDatabase::ParamDB->INTERFACE_FLOW)
 // //        {      
@@ -1116,8 +1114,8 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
   fesp_aux[0] =  U_Space[i];
      
   fefct_aux[i*3 ] = Displacement[i]->GetComponent(0);
-  fefct_aux[i*3+1] = Displacement[i]->GetComponent(1);
-  fefct_aux[i*3+2] = Displacement[i]->GetComponent(2);
+  fefct_aux[(i*3)+1] = Displacement[i]->GetComponent(1);
+  fefct_aux[(i*3)+2] = Displacement[i]->GetComponent(2);
 
   Hyperaux[i] =  new TAuxParam3D(Hyper_N_FESpace, Hyper_N_FEFunction, Hyper_N_ParamFct, Hyper_N_FEValues,
                                 fesp_aux, fefct_aux+(i*3), Hyper_ParamFct, Hyper_FEFctIndex, Hyper_FEMultiIndex,

@@ -85,7 +85,8 @@ class TSystemHyperElast3D
     int **FreeSurfCellNumbers, **FreeSurfJointNumbers;
     
     /** disp fespace */
-    TFESpace3D **U_Space, *FeSpaces[5];
+    TFESpace3D **U_Space;
+//     , *FeSpaces[5];
     
     /** disp FE function */
     TFEVectFunct3D **Displacement;
@@ -125,7 +126,7 @@ class TSystemHyperElast3D
     /** A is the stiffness/system mat for NSE velocity component   */
     TSquareMatrix3D **SqmatrixA11, **SqmatrixA12, **SqmatrixA13;
     TSquareMatrix3D **SqmatrixA21, **SqmatrixA22, **SqmatrixA23;
-    TSquareMatrix3D **SqmatrixA31, **SqmatrixA32, **SqmatrixA33, *SQMATRICES[15];
+    TSquareMatrix3D **SqmatrixA31, **SqmatrixA32, **SqmatrixA33, *SQMATRICES[9];
     TSquareMatrix **sqmatrices;
     TSquareMatrix3D **SqmatrixF11, **SqmatrixF22, **SqmatrixF33;
         

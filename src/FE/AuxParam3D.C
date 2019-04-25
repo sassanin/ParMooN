@@ -148,12 +148,15 @@ void TAuxParam3D::GetParameters(int N_Points, TBaseCell *cell, int cellnum,
 
     fespace = fefunction->GetFESpace3D();
     FE_Id = fespace->GetFE3D(cellnum, cell);
+ 
     BaseFunct_Id = TFEDatabase3D::GetFE3D(FE_Id)->GetBaseFunct3D_ID();
 
     N_BaseFunct[j]=TFEDatabase3D::GetBaseFunct3D(BaseFunct_Id)->GetDimension();
-    OrigValues[j] = TFEDatabase3D::GetOrigElementValues
-	(BaseFunct_Id, FEValue_MultiIndex[j]);
+  cout << " TAuxParam3D BaseFunct_Id  : " << BaseFunct_Id<< endl;     
+    OrigValues[j] = TFEDatabase3D::GetOrigElementValues(BaseFunct_Id, FEValue_MultiIndex[j]);
 
+      cout << " TAuxParam3D   : " << j << endl; 
+    
     GlobalNumbers = fespace->GetGlobalNumbers();
     BeginIndex = fespace->GetBeginIndex();
     Index[j] = GlobalNumbers + BeginIndex[cellnum];

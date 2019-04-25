@@ -165,7 +165,7 @@ int TimeNSBeginParamVelo_GradVelo_VMS3D[1] = { 0 };
 //====================used for ALEVMS3D============================
 
 void TimeNSParamsVelo_GradVelo_VMS3D_ALE(double *in, double *out);
-int TimeNSN_FESpacesVelo_GradVelo_VMS3D_ALE = 2; //velocity and grid fespace
+int TimeNSN_FESpacesVelo_GradVelo_VMS3D_ALE = 3; //velocity, pressure and grid fespace
 int TimeNSN_FctVelo_GradVelo_VMS3D_ALE = 6;      // u1,u2,u3,mesh1,mesh2,mesh3
 int TimeNSN_ParamFctVelo_GradVelo_VMS3D_ALE  = 1; // always starts with 1
 int TimeNSN_FEValuesVelo_GradVelo_VMS3D_ALE  = 15; //  u_1, u_2, u_3,

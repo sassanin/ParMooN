@@ -92,7 +92,7 @@ void BoundCondition(int CompID, double x, double y, double z, BoundCond &cond)
   {  cond = NEUMANN;}
   
   
-//   cout << " BoundCondition " <<endl;
+  cout << " BoundCondition " <<endl;
 }
 
 // value of boundary condition

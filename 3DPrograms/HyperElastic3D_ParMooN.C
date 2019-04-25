@@ -414,21 +414,22 @@ int main(int argc, char* argv[])
      Displacement[i] = u;
 
      N_Cells = coll->GetN_Cells();
-// #ifdef _MPI
-//      printf("rank=%d\t N_Cells   : %d\t Dof all   :%d\t \n",rank,N_Cells,N_TotalDOF);
-// #else
-//     cout<<" N_Cells   : " << N_Cells << " Total Dof all : " << N_TotalDOF <<endl;
-// #endif
+     
+#ifdef _MPI
+     printf("rank=%d\t N_Cells   : %d\t Dof all   :%d\t \n",rank,N_Cells,N_TotalDOF);
+#else
+#ifndef _MPI       
+    OutPut("N_Cells          : "<< setw(10) << N_Cells <<endl);
+    OutPut("Dof Displacement : "<< setw(10) << 3*N_U << endl); 
+#endif 
+#endif
     } //  for(i=0;i<LEVELS;i++)
    
     u1 = Displacement[mg_level-1]->GetComponent(0);
     u2 = Displacement[mg_level-1]->GetComponent(1);
     u3 = Displacement[mg_level-1]->GetComponent(2);  
    
-#ifndef _MPI       
-    OutPut("N_Cells          : "<< setw(10) << N_Cells <<endl);
-    OutPut("Dof Displacement : "<< setw(10) << 3*N_U << endl); 
-#endif 
+
 
     
 //======================================================================
@@ -455,10 +456,10 @@ int main(int argc, char* argv[])
     }
     
     SystemMatrix = new TSystemHyperElast3D(mg_level, FeSpaces, Displacement, Sol_array, Rhs_array, TDatabase::ParamDB->DISCTYPE, TDatabase::ParamDB->SOLVER_TYPE);
-    
+
     // initilize the system matrix with the functions defined in Example file
     SystemMatrix->Init(LinCoeffs, BoundCondition, U1BoundValue, U2BoundValue, U3BoundValue);
-     
+
 #ifdef _MPI
     if(rank==0)
 #endif
@@ -484,6 +485,7 @@ int main(int argc, char* argv[])
     // assemble the system matrix with given sol and rhs 
     SystemMatrix->Assemble();
       
+          exit(0);    
 //     // calculate the residual
 //     defect = new double[N_TotalDOF];
 //     memset(defect,0,N_TotalDOF*SizeOfDouble);

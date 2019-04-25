@@ -70,6 +70,11 @@ TAssembleMat3D::TAssembleMat3D(int n_fespaces, TFESpace3D **fespaces,
    N_Parameters = AuxParam->GetN_Parameters();   
    SecondDer = discreteform->GetNeeds2ndDerivatives();
   
+//          bool *SecondDer;
+//       SecondDer = DiscreteFormARhs->GetNeeds2ndDerivatives();
+//       cout << " TAssembleMat3D SecondDer " << SecondDer[0] << endl;
+      
+      
   if(n_fespaces)
    { FeSpaces = new TFESpace3D *[n_fespaces]; }
   if(n_rhs)
@@ -157,7 +162,7 @@ void TAssembleMat3D::Init()
      } // endfor
      
     if(N_Rhs)
-     rhsaux = new double [N_Rhs*MaxN_BaseFunctions3D];
+    { rhsaux = new double [N_Rhs*MaxN_BaseFunctions3D]; }
     
     for(i=0;i<N_Rhs;i++)
       LocRhs[i] = rhsaux+i*MaxN_BaseFunctions3D;    
@@ -352,14 +357,17 @@ void TAssembleMat3D::Assemble3D()
     //========================================================================
     // calculate values on original element
     //========================================================================
-
+ 
+      cout << " SecondDer Assemble 3D: " << SecondDer[0] << endl; 
+      
+      
     reftrans=TFEDatabase3D::GetOrig(N_LocalUsedElements, LocalUsedElements, 
                                     Coll, cell, SecondDer,
                                     N_Points, xi, eta, zeta, weights,
                                     X, Y, Z, AbsDetjk);    
 
     AuxParam->GetParameters(N_Points, cell, i, xi, eta, zeta, X, Y, Z, Param);
-
+      cout << " SecondDer Assemble 3D: " << SecondDer[0] << endl; 
     if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBLEMESHMAT)
      {
       //calculating turbulent viscosity variant
