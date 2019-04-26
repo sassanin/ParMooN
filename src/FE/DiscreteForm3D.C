@@ -221,14 +221,19 @@ void TDiscreteForm3D::GetLocalForms(int N_Points, double *weights,
   int i,j,k,l, N_Rows, N_Columns;
   double **CurrentMatrix, *MatrixRow;
   double Mult, *Coeff, *Param;
-
-  // cout << "in TDiscreteForm::GetLocalForms" << endl;
+ 
+//   cout << "in TDiscreteForm::GetLocalForms " << n_matrices<< endl;
 
   for(i=0;i<n_matrices;i++)
   {
+      
+    N_Rows =-50;
+    N_Columns =-50;
+      
     CurrentMatrix = LocMatrix[i];
     N_Rows = N_BaseFuncts[RowSpace[i]];
     N_Columns = N_BaseFuncts[ColumnSpace[i]];
+        
     for(j=0;j<N_Rows;j++)
     {
       MatrixRow = CurrentMatrix[j];
@@ -242,6 +247,7 @@ void TDiscreteForm3D::GetLocalForms(int N_Points, double *weights,
     memset(LocRhs[i], 0, SizeOfDouble*N_Rows);
   }
 
+  
 // *****************************************************
 // for 2Phase flow problems (Sashikumaar Ganesan)
 //   AuxArray[0][0] = Cell->GetPhase_ID();
@@ -270,9 +276,8 @@ void TDiscreteForm3D::GetLocalForms(int N_Points, double *weights,
       ErrMsg("second derivatives not yet supported. Exiting");
       exit(1);
     }
-  }
-
-
+  }  
+  
   for(i=0;i<N_Points;i++)
   {
     Mult = weights[i]*AbsDetjk[i];

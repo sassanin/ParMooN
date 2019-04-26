@@ -357,17 +357,14 @@ void TAssembleMat3D::Assemble3D()
     //========================================================================
     // calculate values on original element
     //========================================================================
- 
-      cout << " SecondDer Assemble 3D: " << SecondDer[0] << endl; 
-      
-      
+       
     reftrans=TFEDatabase3D::GetOrig(N_LocalUsedElements, LocalUsedElements, 
                                     Coll, cell, SecondDer,
                                     N_Points, xi, eta, zeta, weights,
                                     X, Y, Z, AbsDetjk);    
 
     AuxParam->GetParameters(N_Points, cell, i, xi, eta, zeta, X, Y, Z, Param);
-      cout << " SecondDer Assemble 3D: " << SecondDer[0] << endl; 
+
     if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBLEMESHMAT)
      {
       //calculating turbulent viscosity variant
@@ -403,8 +400,7 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
   TDatabase::ParamDB->viscosity_min = recieve;
  }
 #endif
-  
-
+        
 // #ifdef _MPI
 // int rank;
 // MPI_Comm_rank(MPI_COMM_WORLD,&rank);
@@ -420,7 +416,7 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
   for(i=0;i<N_Cells;i++)
   {
     cell = Coll->GetCell(i);
-    // cout << "Cell No.: " << i << endl;
+    cout << N_Cells << " Cell No.: " << i << endl;
 
     switch (TDatabase::ParamDB->CELL_MEASURE)
     {
@@ -471,7 +467,7 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
 //      cout << "AbsDetjk: " << AbsDetjk[0] << endl;
 //     OutPut("params " << TDatabase::ParamDB->INTERNAL_LEVEL << endl);
     AuxParam->GetParameters(N_Points, cell, i, xi, eta, zeta, X, Y, Z, Param); 
-    
+       
     if ((TDatabase::ParamDB->DISCTYPE == SDFEM)
         || (TDatabase::ParamDB->BULK_REACTION_DISC == SDFEM)
         || (TDatabase::ParamDB->CELL_MEASURE == 4)
@@ -494,7 +490,6 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
      // use DiscreteForm to assemble a few matrices and 
     // right-hand sides at once
 
-//     OutPut("local form " << i << endl);
     if(DiscreteForm)
       DiscreteForm->GetLocalForms(N_Points, weights, AbsDetjk, 
                                     hK, X, Y, Z,
@@ -502,7 +497,9 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
                                     Param, AuxArray,
                                     cell,
                                     N_AllMatrices, N_Rhs,
-                                    LocMatrices, LocRhs);    
+                                    LocMatrices, LocRhs);
+      
+      
     //========================================================================    
     // add local matrices to global matrices (ansatz == test)       
     //======================================================================== 

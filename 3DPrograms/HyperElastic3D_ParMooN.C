@@ -440,9 +440,6 @@ int main(int argc, char* argv[])
 
    Output->AddFEVectFunct(u);
         
-   
-//    cout << mg_level << endl;
-// exit(0);
 //======================================================================
 // SystemMatrix construction and solution
 //======================================================================  
@@ -485,7 +482,12 @@ int main(int argc, char* argv[])
     // assemble the system matrix with given sol and rhs 
     SystemMatrix->Assemble();
       
-          exit(0);    
+    
+#ifdef _MPI
+    if(rank==0)
+#endif
+    printf("SystemMatrix Assembled \n");
+
 //     // calculate the residual
 //     defect = new double[N_TotalDOF];
 //     memset(defect,0,N_TotalDOF*SizeOfDouble);
@@ -507,24 +509,24 @@ int main(int argc, char* argv[])
 //                setw(14) << sqrt(residual) << endl);
 //      }
 //  
-//  
-//  //======================================================================
-// // produce outout
-// //======================================================================       
-// 
-//      if(TDatabase::ParamDB->WRITE_VTK)
-//      {
-//       os.seekp(std::ios::beg);
-//        if(img<10) os <<  "VTK/"<<VtkBaseName<<".0000"<<img<<".vtk" << ends;
-//          else if(img<100) os <<  "VTK/"<<VtkBaseName<<".000"<<img<<".vtk" << ends;
-//           else if(img<1000) os <<  "VTK/"<<VtkBaseName<<".00"<<img<<".vtk" << ends;
-//            else if(img<10000) os <<  "VTK/"<<VtkBaseName<<".0"<<img<<".vtk" << ends;
-//             else  os <<  "VTK/"<<VtkBaseName<<"."<<img<<".vtk" << ends;
-//       Output->WriteVtk(os.str().c_str());
-//       img++;
-//      }   
-//  
-// 
+ 
+ //======================================================================
+// produce outout
+//======================================================================       
+
+     if(TDatabase::ParamDB->WRITE_VTK)
+     {
+      os.seekp(std::ios::beg);
+       if(img<10) os <<  "VTK/"<<VtkBaseName<<".0000"<<img<<".vtk" << ends;
+         else if(img<100) os <<  "VTK/"<<VtkBaseName<<".000"<<img<<".vtk" << ends;
+          else if(img<1000) os <<  "VTK/"<<VtkBaseName<<".00"<<img<<".vtk" << ends;
+           else if(img<10000) os <<  "VTK/"<<VtkBaseName<<".0"<<img<<".vtk" << ends;
+            else  os <<  "VTK/"<<VtkBaseName<<"."<<img<<".vtk" << ends;
+      Output->WriteVtk(os.str().c_str());
+      img++;
+     }   
+ 
+   exit(0); 
 //     
 // //====================================================================== 
 // // Solve the system

@@ -73,6 +73,21 @@ void Galerkin3D(double Mult, double *coeff, double *param, double hK, double **O
 void HyperParamsVelo(double *in, double *out);
 double Piola_Kir(double *param, double test100, double test010, double test001, double test000, double ansatz100, double ansatz010, double ansatz001, double ansatz000, int row, int col);
 
+/**  parameters for Auxpaam */
+ int Hyper_FEFctIndex[12] = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+ int Hyper_BeginParam[1] = { 0 };  
+ MultiIndex3D Hyper_FEMultiIndex[12] = { D000, D000, D000, D100, D100, D100,
+                                         D010, D010, D010, D001, D001, D001 };  
+ ParamFct *Hyper_ParamFct[1] = { HyperParamsVelo };
+
+
+/** parameters for Discrete form */
+  MultiIndex3D Derivatives[4] = { D100, D010, D001, D000};
+  int SpaceNumbers[4] = { 0, 0, 0, 0};
+  int RowSpace[9]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int ColumnSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  int RhsSpace[3] = { 0, 0, 0 };
+
 TSystemHyperElast3D::TSystemHyperElast3D(int N_levels, TFESpace3D **disp_fespace, TFEVectFunct3D **displacement, double **sol, double **rhs, int disctype, int solver)
 {
   int i, zerostart;
@@ -349,21 +364,16 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
 //   this->InitHyperDiscreteForms(DiscreteFormGalerkin);
   
        
-  char GalerkinString[] = "Galerkin";
-  char rhs[] = "rhs";
-  char all[] = "all";
+
   
   DiscreteFormGalerkin = NULL; 
-   
   int N_Terms = 4;
-  MultiIndex3D Derivatives[4] = { D100, D010, D001, D000};
-  int SpaceNumbers[4] = { 0, 0, 0, 0};
+  N_Rhs = 3;
   int N_Matrices = 9;
-  int RowSpace[9]    = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  int ColumnSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
-   N_Rhs = 3;
-  int RhsSpace[3] = { 0, 0, 0 };
-  
+ 
+  char GalerkinString[] = "Galerkin";
+  char rhs[] = "rhs";
+  char all[] = "all";    
   
   DiscreteFormGalerkin = new TDiscreteForm3D(GalerkinString, all,  N_Terms, Derivatives, SpaceNumbers,
                                              N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);         
@@ -429,7 +439,7 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
       RHSs[0] = RhsArray[i];
       RHSs[1] = RhsArray[i] + N_U_Current;
       RHSs[2] = RhsArray[i] + 2*N_U_Current;
- 
+//    cout << " Hyper_FEMultiIndex   3D: " << Hyper_FEMultiIndex[0] << endl;
   
      // array of assemble objects
      AMatRhsAssemble[i] = new TAssembleMat3D(N_FESpaces, fesp, N_SquareMatrices, SQMATRICES, 0, NULL,
@@ -584,8 +594,6 @@ void TSystemHyperElast3D::Assemble()
       /** assemble */
       AMatRhsAssemble[i]->Assemble3D();
  
-            cout << "Assemble " << endl;
-      exit(0);
 //       /** free surface/interface integration */
 // //       if(TDatabase::ParamDB->INTERFACE_FLOW)
 // //        {      
@@ -668,11 +676,13 @@ void TSystemHyperElast3D::Assemble()
      } // for(i=Start_Level;i<N_Levels;i++)
       
 
-    cout << "Test Assemble " << endl; 
-    exit(0);
+//     cout << "Test Assemble " << endl; 
+//     exit(0);
     
 } // TSystemHyperElast3D::Assemble(T
-// 
+
+
+
 // void TSystemNSE3D::AssembleNonLinear(double **sol, double **rhs)
 // {
 //  int i, N_SquareMatrices, N_RectMatrices, N_Rhs, N_FESpaces;
@@ -820,7 +830,7 @@ void TSystemHyperElast3D::Assemble()
 //    for(i=0;i<N_U;i++)
 //    {
 //      if(master[i]!=rank)    continue;
-//       
+//       BdComp
 //       residual_scalar += res[i      ]*res[i      ];
 //       residual_scalar += res[i+  N_U]*res[i+  N_U];
 //       residual_scalar += res[i+2*N_U]*res[i+2*N_U];
@@ -1101,16 +1111,8 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
   int Hyper_N_FEFunction = 3;
   int Hyper_N_ParamFct = 1;
   int Hyper_N_FEValues = 12;
-  int Hyper_N_ParamValues = 15;
-  int Hyper_FEFctIndex[12] = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
-  int Hyper_BeginParam[1] = { 0 };  
-  MultiIndex3D Hyper_FEMultiIndex[12] = { D000, D000, D000, D100, D100, D100,
-                                          D010, D010, D010, D001, D001, D001 };  
-                                      
-                                          
-  ParamFct *Hyper_ParamFct[1] = { HyperParamsVelo};
-
-  
+  int Hyper_N_ParamValues = 15;                                      
+                                            
   fesp_aux[0] =  U_Space[i];
      
   fefct_aux[i*3 ] = Displacement[i]->GetComponent(0);
@@ -1121,6 +1123,11 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
                                 fesp_aux, fefct_aux+(i*3), Hyper_ParamFct, Hyper_FEFctIndex, Hyper_FEMultiIndex,
                                 Hyper_N_ParamValues, Hyper_BeginParam);
     
+  
+  
+//         cout << " Hyper_FEMultiIndex   3D: " << Hyper_FEMultiIndex[0] << endl; 
+  
+  
 }
 
 

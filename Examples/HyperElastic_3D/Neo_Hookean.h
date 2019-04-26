@@ -44,26 +44,28 @@ void BoundCondition(int i, double x, double y, double z, BoundCond &cond)
 
 void U1BoundValue(int BdComp,  double x, double y, double z, double &value)
 {
-  switch(BdComp)
-  {
-    case 0: value = 0;
-            break;
-    case 1: value = 0;
-            break;
-    case 2:  
-            value = 0;
-            break;
-    case 3: value = 0;
+//   switch(BdComp)
+//   {
+//     case 0: value = 0;
+//             break;
+//     case 1: value = 0;
+//             break;
+//     case 2:  
+//             value = 0;
+//             break;
+//     case 3: value = 0;
+//   
+//             break;
+//     default: cout << "wrong boundary part number" << endl;
+//   }
+ value = 0;  
   
-            break;
-    default: cout << "wrong boundary part number" << endl;
-  }
 }
 
 void U2BoundValue(int BdComp,  double x, double y, double z, double &value)
 {
   value = 0;
-  if(BdComp>3) cout << "wrong boundary part number" << endl;
+//   if(BdComp>3) cout << "wrong boundary part number" << endl;
 }
 
 void U3BoundValue(int BdComp,  double x, double y, double z, double &value)
