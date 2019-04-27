@@ -78,6 +78,12 @@ TSystemTCD3D::TSystemTCD3D(int N_levels, TFESpace3D **fespaces, double **sol, do
    
   SystMatAssembled  = FALSE;
     
+  
+  
+  Values = NULL; KCol = NULL; Row = NULL; Symbolic=NULL, Numeric=NULL;  
+  UpdateStiffnessMat=FALSE;
+  FirstTime   = TRUE;
+   
 } // constructor
 
 
@@ -388,7 +394,27 @@ void TSystemTCD3D::Solve(double *sol)
 #endif
 
 #ifdef _SEQ
-        DirectSolver(sqmatrixM[N_Levels-1], B, sol);
+
+
+//   Values = NULL; KCol = NULL; Row = NULL; Symbolic=NULL, Numeric=NULL;  
+//   UpdateStiffnessMat=FALSE;
+//   FirstTime   = TRUE;
+    if(FirstTime)
+      { /** allocation and LU-decomposition forward/backward */
+       DirectSolver((TSquareMatrix*)sqmatrixM[N_Levels-1], B, sol, Values, KCol, Row, Symbolic, Numeric, 0);
+       FirstTime = FALSE;
+      }
+    else if(UpdateStiffnessMat)
+      { 
+       OutPut("Not yet implemented" << endl);
+       exit(0);
+      }
+    else
+     { /** only forward/backward*/
+      DirectSolver((TSquareMatrix*)sqmatrixM[N_Levels-1], B, sol, Values, KCol, Row, Symbolic, Numeric, 1);   
+     }
+          
+//         DirectSolver((TSquareMatrix*)sqmatrixM[N_Levels-1], B, sol);
 #endif
 	//this is set to false for direct solver factorization
         factorize = false;

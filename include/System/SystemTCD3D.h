@@ -77,6 +77,12 @@ class TSystemTCD3D : public TSystemCD3D
     /** Systmat assemble indicator */
     bool SystMatAssembled;
     
+   /** for sirect solver */      
+   double *Values;
+   int *KCol, *Row;
+   void *Symbolic, *Numeric;  
+   bool UpdateStiffnessMat, FirstTime;
+    
   public:
     /** constructor */
      TSystemTCD3D(int N_levels, TFESpace3D **fespaces, double **sol, double **rhs, int disctype, int solver);
@@ -120,6 +126,10 @@ class TSystemTCD3D : public TSystemCD3D
       for(i=0;i<N;i++)	sum+=sol[i];
       return sum;
     }
+    
+    void SetUpdateStiffnessMat(bool in)
+    {UpdateStiffnessMat = in;}
+    
     
 };
 

@@ -416,7 +416,7 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
   for(i=0;i<N_Cells;i++)
   {
     cell = Coll->GetCell(i);
-    cout << N_Cells << " Cell No.: " << i << endl;
+//     cout << N_Cells << " Cell No.: " << i << endl;
 
     switch (TDatabase::ParamDB->CELL_MEASURE)
     {

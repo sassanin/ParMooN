@@ -842,7 +842,7 @@ void TTetraIsoparametric::SetCell(TBaseCell *cell)
          {
            AuxVertices = ((TIsoBoundFace *)joint)->GetVertices();
            N_AuxVertices = ((TIsoBoundFace *)joint)->GetN_Vertices();
-	   N_AuxVertices -= N_AuxVertices > 3 ? 1 : 0; // face bubble not needed
+	       N_AuxVertices -= N_AuxVertices > 3 ? 1 : 0; // face bubble not needed
            N_IsoFaces++;
            if(N_IsoFaces>1)
            {
@@ -855,33 +855,42 @@ void TTetraIsoparametric::SetCell(TBaseCell *cell)
            }
          }
 
-
-    if(ApproximationOrder==2 && TDatabase::ParamDB->MOVING_BOUNDARY && N_AuxVertices==3)
-      {
-//      additional vertices should have been already added in this face in the main program
-        LocIsoDOF[0] = 1;
-        LocIsoDOF[1] = 3;
-        LocIsoDOF[2] = 4;
-//         LocIsoDOF[3] = 6;      // local dof of face point, see C_T_B2_3D_J
-
-        LinComb[0][0]=0.5; LinComb[1][0]=0.5; LinComb[2][0]=0.0;
-        LinComb[0][1]=0.5; LinComb[1][1]=0.0; LinComb[2][1]=0.5;
-        LinComb[0][2]=0.0; LinComb[1][2]=0.5; LinComb[2][2]=0.5;
-
-        for(j=0;j<N_AuxVertices;j++)
+     if(TDatabase::ParamDB->MOVING_BOUNDARY)
+      {  
+        if(ApproximationOrder==2)
          {
-          AuxVertices[j]->GetCoords(xp, yp, zp);
-          xm = 0.;  ym=0.; zm=0.;
-          for(k=0;k<3;k++)    // number of vertices on the face
-            {
-              factor = LinComb[j][k];
-              xm += factor*x[k];
-              ym += factor*y[k];
-              zm += factor*z[k];
-            }
-
-          if(fabs(xp-xm) > 1e-8 || fabs(yp-ym) > 1e-8 || fabs(zp-zm) > 1e-8)
+          if(N_AuxVertices!=3)
            {
+            cout<< " ApproximationOrder " <<ApproximationOrder<< " " << N_AuxVertices << " " <<TDatabase::ParamDB->MOVING_BOUNDARY<< endl;
+            OutPut("Moving IsoBoundFace, but no face vertices are generated "<<endl;);
+            exit(0);
+           }
+              
+              
+           //      additional vertices should have been already added in this face in the main program
+           LocIsoDOF[0] = 1;
+           LocIsoDOF[1] = 3;
+           LocIsoDOF[2] = 4;
+           //         LocIsoDOF[3] = 6;      // local dof of face point, see C_T_B2_3D_J
+
+           LinComb[0][0]=0.5; LinComb[1][0]=0.5; LinComb[2][0]=0.0;
+           LinComb[0][1]=0.5; LinComb[1][1]=0.0; LinComb[2][1]=0.5;
+           LinComb[0][2]=0.0; LinComb[1][2]=0.5; LinComb[2][2]=0.5;
+
+           for(j=0;j<N_AuxVertices;j++)
+            {
+             AuxVertices[j]->GetCoords(xp, yp, zp);
+             xm = 0.;  ym=0.; zm=0.;
+             for(k=0;k<3;k++)    // number of vertices on the face
+              {
+               factor = LinComb[j][k];
+               xm += factor*x[k];
+               ym += factor*y[k];
+               zm += factor*z[k];
+              }
+ 
+            if(fabs(xp-xm) > 1e-8 || fabs(yp-ym) > 1e-8 || fabs(zp-zm) > 1e-8)
+             {
 
 //             cout << endl;
 //             cout << "xpzp " << xp*xp + yp*yp +  zp*zp<< endl;
@@ -892,216 +901,220 @@ void TTetraIsoparametric::SetCell(TBaseCell *cell)
 //             cout << "Y: " << yp-ym << endl;
 //             OutPut(" zp: " << zp << " zm: " << zm );
 //             cout << "Z: " << zp-zm << endl;
-//         OutPut(" R0: " << sqrt((xp-xm)*(xp-xm) + (yp-ym)*(yp-ym)+ (zp-zm)*(zp-zm)) << endl );
-            XDistance[N_AuxPoints] = xp - xm;
-            YDistance[N_AuxPoints] = yp - ym;
-            ZDistance[N_AuxPoints] = zp - zm;
-            IntAux[N_AuxPoints] = JointDOF[LocIsoDOF[j]];
-            N_AuxPoints++;
+//            OutPut(" R0: " << sqrt((xp-xm)*(xp-xm) + (yp-ym)*(yp-ym)+ (zp-zm)*(zp-zm)) << endl );
+              XDistance[N_AuxPoints] = xp - xm;
+              YDistance[N_AuxPoints] = yp - ym;
+              ZDistance[N_AuxPoints] = zp - zm;
+              IntAux[N_AuxPoints] = JointDOF[LocIsoDOF[j]];
+              N_AuxPoints++;
+             }
+            } //    for(j=0;j<=N_A
            }
-         } //    for(j=0;j<=N_A
-     }
-    else if(ApproximationOrder>1)
-     {
-       cout<< " ApproximationOrder " <<ApproximationOrder<< " " << N_AuxVertices << " " <<TDatabase::ParamDB->MOVING_BOUNDARY<< endl;
-      OutPut("Tetra isoparametric for approximation order other than 2 has to be implemented !!! "<<endl;);
-      exit(0);
-
-      }
-    } // endif
-   } // endfor i
+          else if(ApproximationOrder>2)
+           {
+            cout<< " ApproximationOrder " <<ApproximationOrder<< " " << N_AuxVertices << " " <<TDatabase::ParamDB->MOVING_BOUNDARY<< endl;
+            OutPut("Tetra isoparametric for approximation order other than 2 has to be implemented !!! "<<endl;);
+            exit(0);
+           }
+          } // if(TDatabase::ParamDB->MOVING_BOUNDARY)
+        else if(TDatabase::ParamDB->USE_PRM!=0)
+         {
+          //     /***************************************************************************/
+          //     // this is for isoparametric tetrahedral finite elements in the 3d circular
+        if(N_AuxPoints == 0)
+         {
+          for(i=0;i<4;i++) // for all vertices  
+           {
+            // get coordinates of vertex i
+            cell->GetVertex(i)->GetCoords(xp, yp, zp);
+           // point on cylinder
+           if(fabs((xp-0.5)*(xp-0.5)+(yp-0.2)*(yp-0.2)-0.0025)<1e-10)
+           //if(fabs(xp*xp+yp*yp+zp*zp-1)<1e-10)
+            {
+          // point on boundary
+          // look to all other vertices
+          for(j=i+1;j<4;j++)
+          {
+            // get coordinates of second vertex
+            cell->GetVertex(j)->GetCoords(xm, ym, zm);
+            // if second vertex on cylinder
+            if(fabs((xm-0.5)*(xm-0.5)+(ym-0.2)*(ym-0.2)-0.0025)<1e-10)
+              //if(fabs(xm*xm+ym*ym+zm*zm-1)<1e-10)
+            {
+              // point on boundary
+              // find number of dof for P_2
+              bf = TFEDatabase3D::GetBaseFunct3D(
+                BaseFunctFromOrder[ApproximationOrder]);
+              if (ApproximationOrder==2)
+              {
+                // switch number of first vertex
+                switch(i)
+                {
+                  case 0:
+                    // switch number of second vertex
+                    switch(j)
+                    {
+                      case 1: m = 1; break;
+                      case 2: m = 3; break;
+                      case 3: m = 6; break;
+                    } // endswitch(j)
+                    break;
+                    
+                  case 1:
+                    switch(j)
+                    {
+                      case 2: m = 4; break;
+                      case 3: m = 7; break;
+                    } // endswitch(j)
+                    break;
+                    
+                  case 2:
+                    m = 8;
+                    break;
+                } // endswitch(i)
+                
+                // centre of edge
+                a = 0.5*(xp+xm);
+                b = 0.5*(yp+ym);
+                c = 0.5*(zp+zm);
+                // projection to the boundary
+                T = sqrt((a-0.5)*(a-0.5)+(b-0.2)*(b-0.2));
+                project_a = 0.5 + 0.05*(a-0.5)/T;
+                project_b = 0.2 + 0.05*(b-0.2)/T;    
+                project_c = c;
+                // T = sqrt(a*a+b*b+c*c);
+                // project_a = a/T;
+                // project_b = b/T;    
+                //project_c = c/T;    
+                if(fabs(a-project_a) > 1e-8 || fabs(b-project_b) > 1e-8  || fabs(c-project_c) > 1e-8)
+                {
+                  // OutPut("edge: x " << a << " project x " << project_a << " y " << b 
+                  //      << " project y " << project_b << " z " << (zm+zp)/2.0 << " "  
+                  //       << sqrt((project_a-0.5)*(project_a-0.5)+(project_b-0.2)*(project_b-0.2)) << endl);
+                  //<< sqrt((project_a)*(project_a)+(project_b)*(project_b)+(project_c)*(project_c)) << endl);
+                  // differences
+                  XDistance[N_AuxPoints] = project_a - a;
+                  YDistance[N_AuxPoints] = project_b - b;
+                  ZDistance[N_AuxPoints] = project_c - c;
+                  // dof which is moved    
+                  IntAux[N_AuxPoints] = m;
+                  N_AuxPoints++;
+                }
+              }
+              // P_3
+              if (ApproximationOrder==3)
+              {
+                switch(i)
+                {
+                  case 0:
+                    switch(j)
+                    {
+                      case 1: m = 1; n = 2; break;
+                      case 2: m = 4; n = 7; break;
+                      case 3: m = 10; n = 16;  break;
+                    } // endswitch(j)
+                    break;
+                    
+                  case 1:
+                    switch(j)
+                    {
+                      case 2: m = 6; n = 8; break;
+                      case 3: m = 12; n = 17; break;
+                    } // endswitch(j)
+                    break;
+                    
+                  case 2:
+                    m = 15; n = 18;
+                    break;
+                } // endswitch(i)
+                
+                //  first dof
+                a = (2*xp+xm)/3;
+                b = (2*yp+ym)/3;
+                // projection to the boundary
+                T = sqrt((a-0.5)*(a-0.5)+(b-0.2)*(b-0.2));
+                project_a = 0.5 + 0.05*(a-0.5)/T;
+                project_b = 0.2 + 0.05*(b-0.2)/T;         
+                // OutPut("0: a " << a << " project a " << project_a << " b " << b 
+                //       << " project b " << project_b << " "
+                //       << sqrt((project_a-0.5)*(project_a-0.5)+(project_b-0.2)*(project_b-0.2)) << endl);
+                // differences
+                XDistance[N_AuxPoints] = project_a - a;
+                YDistance[N_AuxPoints] = project_b - b;
+                ZDistance[N_AuxPoints] = 0;
+                IntAux[N_AuxPoints] = m;
+                N_AuxPoints++;
+                //  second dof
+                a = (xp+2*xm)/3;
+                b = (yp+2*ym)/3;
+                // projection to the boundary
+                project_a = 0.5 + 0.05*(a-0.5)/T;
+                project_b = 0.2 + 0.05*(b-0.2)/T;         
+                //OutPut("1: a " << a << " project a " << project_a << " b " << b 
+                //       << " project b " << project_b << " " 
+                //      << sqrt((project_a-0.5)*(project_a-0.5)+(project_b-0.2)*(project_b-0.2)) << endl);
+                // differences
+                XDistance[N_AuxPoints] = project_a - a;
+                YDistance[N_AuxPoints] = project_b - b;
+                ZDistance[N_AuxPoints] = 0;
+                IntAux[N_AuxPoints] = n;
+                N_AuxPoints++;
+              }
+              
+            } // endif
+          } // endfor j
+        } // endif
+      } // endfor i
+    } // endif                      
+            
+            
+         } // Not MovingBoundary but IsoBoundFace
+        else
+         {
+          cout<< " ApproximationOrder " <<ApproximationOrder<< " " << N_AuxVertices << " " <<TDatabase::ParamDB->MOVING_BOUNDARY<< endl;
+          OutPut("Tetra isoparametric : Neither PRM used nor additional vertices added on IsoBoundFace, Use TetraAffine !!! "<<endl;);
+          exit(0);          
+         }
+         
+     } // if(type == BoundaryFace || type == IsoBoundFace)
+    } // endfor i
 //  OutPut(N_AuxPoints << " : N_AuxPoints, " <<  " N_QuadPoints  :" << N_QuadPoints << endl);
 
-
-//   if (TDatabase::ParamDB->INTERNAL_PROBLEM_IDENTITY==1)
+//   if (N_AuxPoints)
 //   {
-//     /***************************************************************************/
-//     // this is for isoparametric tetrahedral finite elements in the 3d circular
-//     // benchmark
-//     // one has to change in addition in FEDatabase3D.C , ~ line 748
-//    cout<< "Check tetraisoparametric.C !!!!!!!!!!!!!!!!!!!!! "<<endl;
-//     exit(0);
-//     // no boundary face
-//     if(N_AuxPoints == 0)
-//     {
-//       // for all vertices    
-//       for(i=0;i<4;i++)
-//       {
-//         // get coordinates of vertex i
-//         cell->GetVertex(i)->GetCoords(xp, yp, zp);
-//         // point on cylinder
-//         if(fabs((xp-0.5)*(xp-0.5)+(yp-0.2)*(yp-0.2)-0.0025)<1e-10)
-//           //if(fabs(xp*xp+yp*yp+zp*zp-1)<1e-10)
-//         {
-//           // point on boundary
-//           // look to all other vertices
-//           for(j=i+1;j<4;j++)
-//           {
-//             // get coordinates of second vertex
-//             cell->GetVertex(j)->GetCoords(xm, ym, zm);
-//             // if second vertex on cylinder
-//             if(fabs((xm-0.5)*(xm-0.5)+(ym-0.2)*(ym-0.2)-0.0025)<1e-10)
-//               //if(fabs(xm*xm+ym*ym+zm*zm-1)<1e-10)
-//             {
-//               // point on boundary
-//               // find number of dof for P_2
-//               bf = TFEDatabase3D::GetBaseFunct3D(
-//                 BaseFunctFromOrder[ApproximationOrder]);
-//               if (ApproximationOrder==2)
-//               {
-//                 // switch number of first vertex
-//                 switch(i)
-//                 {
-//                   case 0:
-//                     // switch number of second vertex
-//                     switch(j)
-//                     {
-//                       case 1: m = 1; break;
-//                       case 2: m = 3; break;
-//                       case 3: m = 6; break;
-//                     } // endswitch(j)
-//                     break;
-//                     
-//                   case 1:
-//                     switch(j)
-//                     {
-//                       case 2: m = 4; break;
-//                       case 3: m = 7; break;
-//                     } // endswitch(j)
-//                     break;
-//                     
-//                   case 2:
-//                     m = 8;
-//                     break;
-//                 } // endswitch(i)
-//                 
-//                 // centre of edge
-//                 a = 0.5*(xp+xm);
-//                 b = 0.5*(yp+ym);
-//                 c = 0.5*(zp+zm);
-//                 // projection to the boundary
-//                 T = sqrt((a-0.5)*(a-0.5)+(b-0.2)*(b-0.2));
-//                 project_a = 0.5 + 0.05*(a-0.5)/T;
-//                 project_b = 0.2 + 0.05*(b-0.2)/T;    
-//                 project_c = c;
-//                 // T = sqrt(a*a+b*b+c*c);
-//                 // project_a = a/T;
-//                 // project_b = b/T;    
-//                 //project_c = c/T;    
-//                 if(fabs(a-project_a) > 1e-8 || fabs(b-project_b) > 1e-8  || fabs(c-project_c) > 1e-8)
-//                 {
-//                   // OutPut("edge: x " << a << " project x " << project_a << " y " << b 
-//                   //      << " project y " << project_b << " z " << (zm+zp)/2.0 << " "  
-//                   //       << sqrt((project_a-0.5)*(project_a-0.5)+(project_b-0.2)*(project_b-0.2)) << endl);
-//                   //<< sqrt((project_a)*(project_a)+(project_b)*(project_b)+(project_c)*(project_c)) << endl);
-//                   // differences
-//                   XDistance[N_AuxPoints] = project_a - a;
-//                   YDistance[N_AuxPoints] = project_b - b;
-//                   ZDistance[N_AuxPoints] = project_c - c;
-//                   // dof which is moved    
-//                   IntAux[N_AuxPoints] = m;
-//                   N_AuxPoints++;
-//                 }
-//               }
-//               // P_3
-//               if (ApproximationOrder==3)
-//               {
-//                 switch(i)
-//                 {
-//                   case 0:
-//                     switch(j)
-//                     {
-//                       case 1: m = 1; n = 2; break;
-//                       case 2: m = 4; n = 7; break;
-//                       case 3: m = 10; n = 16;  break;
-//                     } // endswitch(j)
-//                     break;
-//                     
-//                   case 1:
-//                     switch(j)
-//                     {
-//                       case 2: m = 6; n = 8; break;
-//                       case 3: m = 12; n = 17; break;
-//                     } // endswitch(j)
-//                     break;
-//                     
-//                   case 2:
-//                     m = 15; n = 18;
-//                     break;
-//                 } // endswitch(i)
-//                 
-//                 //  first dof
-//                 a = (2*xp+xm)/3;
-//                 b = (2*yp+ym)/3;
-//                 // projection to the boundary
-//                 T = sqrt((a-0.5)*(a-0.5)+(b-0.2)*(b-0.2));
-//                 project_a = 0.5 + 0.05*(a-0.5)/T;
-//                 project_b = 0.2 + 0.05*(b-0.2)/T;         
-//                 // OutPut("0: a " << a << " project a " << project_a << " b " << b 
-//                 //       << " project b " << project_b << " "
-//                 //       << sqrt((project_a-0.5)*(project_a-0.5)+(project_b-0.2)*(project_b-0.2)) << endl);
-//                 // differences
-//                 XDistance[N_AuxPoints] = project_a - a;
-//                 YDistance[N_AuxPoints] = project_b - b;
-//                 ZDistance[N_AuxPoints] = 0;
-//                 IntAux[N_AuxPoints] = m;
-//                 N_AuxPoints++;
-//                 //  second dof
-//                 a = (xp+2*xm)/3;
-//                 b = (yp+2*ym)/3;
-//                 // projection to the boundary
-//                 project_a = 0.5 + 0.05*(a-0.5)/T;
-//                 project_b = 0.2 + 0.05*(b-0.2)/T;         
-//                 //OutPut("1: a " << a << " project a " << project_a << " b " << b 
-//                 //       << " project b " << project_b << " " 
-//                 //      << sqrt((project_a-0.5)*(project_a-0.5)+(project_b-0.2)*(project_b-0.2)) << endl);
-//                 // differences
-//                 XDistance[N_AuxPoints] = project_a - a;
-//                 YDistance[N_AuxPoints] = project_b - b;
-//                 ZDistance[N_AuxPoints] = 0;
-//                 IntAux[N_AuxPoints] = n;
-//                 N_AuxPoints++;
-//               }
-//               
-//             } // endif
-//           } // endfor j
-//         } // endif
-//       } // endfor i
-//     } // endif
-//   }
-//  
+//     OutPut("auxa " << N_AuxPoints << endl);
+//     OutPut(x0 << " " << y0 << " " << z0 << endl);
+//     OutPut(x1 << " " << y1 << " " << z1 << endl);
+//     OutPut(x2 << " " << y2 << " " << z2 << endl);
+//     OutPut(x3 << " " << y3 << " " << z3 << endl);
+//     }
 
-  /*if (N_AuxPoints)
-  {
-    OutPut("auxa " << N_AuxPoints << endl);
-    OutPut(x0 << " " << y0 << " " << z0 << endl);
-    OutPut(x1 << " " << y1 << " " << z1 << endl);
-    OutPut(x2 << " " << y2 << " " << z2 << endl);
-    OutPut(x3 << " " << y3 << " " << z3 << endl);
-    }*/
+    if(N_AuxPoints)
+     {
+      for(i=0;i<N_QuadPoints;i++)
+       {
+        bf->GetDerivatives(D000, XI[i], ETA[i], ZETA[i], DoubleAux);
+        for(j=0;j<N_AuxPoints;j++)
+          FctValues[i][j] = DoubleAux[IntAux[j]];
 
-//  OutPut(N_AuxPoints << " : N_AuxPoints, " <<  " N_QuadPoints  >" << N_QuadPoints << endl);
-  if(N_AuxPoints)
-  {
-    for(i=0;i<N_QuadPoints;i++)
-    {
-      bf->GetDerivatives(D000, XI[i], ETA[i], ZETA[i], DoubleAux);
-      for(j=0;j<N_AuxPoints;j++)
-        FctValues[i][j] = DoubleAux[IntAux[j]];
+        bf->GetDerivatives(D100, XI[i], ETA[i], ZETA[i], DoubleAux);
+        for(j=0;j<N_AuxPoints;j++)
+          XiDerValues[i][j] = DoubleAux[IntAux[j]];
 
-      bf->GetDerivatives(D100, XI[i], ETA[i], ZETA[i], DoubleAux);
-      for(j=0;j<N_AuxPoints;j++)
-        XiDerValues[i][j] = DoubleAux[IntAux[j]];
+        bf->GetDerivatives(D010, XI[i], ETA[i], ZETA[i], DoubleAux);
+        for(j=0;j<N_AuxPoints;j++)
+          EtaDerValues[i][j] = DoubleAux[IntAux[j]];
 
-      bf->GetDerivatives(D010, XI[i], ETA[i], ZETA[i], DoubleAux);
-      for(j=0;j<N_AuxPoints;j++)
-        EtaDerValues[i][j] = DoubleAux[IntAux[j]];
-
-      bf->GetDerivatives(D001, XI[i], ETA[i], ZETA[i], DoubleAux);
-      for(j=0;j<N_AuxPoints;j++)
-        ZetaDerValues[i][j] = DoubleAux[IntAux[j]];
-    } // endfor i
-  } // endif
+        bf->GetDerivatives(D001, XI[i], ETA[i], ZETA[i], DoubleAux);
+         for(j=0;j<N_AuxPoints;j++)
+          ZetaDerValues[i][j] = DoubleAux[IntAux[j]];
+        } // endfor i
+       } // endif
+      else
+       { 
+      OutPut(N_AuxPoints << " : N_AuxPoints, " <<  " N_QuadPoints  >" << N_QuadPoints << endl);
+      exit(0);
+     }
 }
 
 /** return outer normal unit vector */
