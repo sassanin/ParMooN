@@ -637,40 +637,42 @@ void FindEigenValues(double *ap, char &UPLO, int N_Eqn, char &COMPZ, double *d, 
 
 
 
-/** calculate the determinant of a 3x3 matrix using Lapack routines*/
-double MatrixDeterminant(double *a)
+/** calculate the determinant of the matrix using Lapack routines*/
+double MatrixDeterminant(double *a, int dimension)
 {
   
   int m, n, lda;
   int *ipivot, info;
   char t='n';
 
-  m = 3;
-  n = 3;
-  lda = 3;
+  m = dimension;
+  n = dimension;
+  lda = dimension;
   ipivot = new int[n];
   double det =1;
   dgetrf_(&m, &n, a, &lda, ipivot, &info);
-  for(int i=0; i<3 ; i++) det *= a[3*i +i];
+  //Determinant Evaluation
+  for(int i=0; i<dimension ; i++) det *= a[dimension*i +i];
 
   int j;
   double detp=1.;
-  for( j=0;j<n;j++){
+  for( j=0;j <n;j++){
     if(j+1!=ipivot[j]){
         // j+1 : following feedback of ead : ipiv is from Fortran, hence starts at 1.
         // hey ! This is a transpose !
         detp=-detp;
     }
   }
-det = det*detp;
+  det = det*detp;
  
   delete ipivot;
-return det;
+  return det;
 }
 
 
+
 /** calculate the inverse of a 3x3 matrix using Lapack routines*/
-void MatrixInverse(double *a)
+void MatrixInverse(double *a, int dimension, int flag)
 {
   
   int m, n, lda;

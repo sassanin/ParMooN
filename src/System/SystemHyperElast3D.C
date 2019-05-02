@@ -74,10 +74,9 @@ void HyperParamsVelo(double *in, double *out);
 double Piola_Kir(double *param, double test100, double test010, double test001, double test000, double ansatz100, double ansatz010, double ansatz001, double ansatz000, int row, int col);
 
 /**  parameters for Auxpaam */
- int Hyper_FEFctIndex[12] = { 0, 1, 2, 0, 1, 2, 0, 1, 2, 0, 1, 2};
+ int Hyper_FEFctIndex[9] = { 0, 1, 2, 0, 1, 2, 0, 1, 2};
  int Hyper_BeginParam[1] = { 0 };  
- MultiIndex3D Hyper_FEMultiIndex[12] = { D000, D000, D000, D100, D100, D100,
-                                         D010, D010, D010, D001, D001, D001 };  
+ MultiIndex3D Hyper_FEMultiIndex[9] = { D100, D100, D100, D010, D010, D010, D001, D001, D001 };  
  ParamFct *Hyper_ParamFct[1] = { HyperParamsVelo };
 
 
@@ -339,7 +338,13 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
 { 
   int i, N_SquareMatrices, N_Rhs, N_FESpaces;
   int N_U_Current;
-
+  int N_Terms = 4;
+  int N_Matrices = 9;
+   
+  char GalerkinString[] = "Galerkin";
+  char rhs[] = "rhs";
+  char all[] = "all";
+  
 //   int mg_type = TDatabase::ParamDB->SC_MG_TYPE_SADDLE;
 //     
 //   double alpha[2];  
@@ -360,23 +365,9 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
   /** save the nse bilinear coefficient   */
   LinCoeffs[0] = lincoeffs;
   
-  /** set the Discreteforms */
-//   this->InitHyperDiscreteForms(DiscreteFormGalerkin);
-  
-       
-
-  
-  DiscreteFormGalerkin = NULL; 
-  int N_Terms = 4;
   N_Rhs = 3;
-  int N_Matrices = 9;
- 
-  char GalerkinString[] = "Galerkin";
-  char rhs[] = "rhs";
-  char all[] = "all";    
-  
   DiscreteFormGalerkin = new TDiscreteForm3D(GalerkinString, all,  N_Terms, Derivatives, SpaceNumbers,
-                                             N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);         
+                                             N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL); 
   
     /** find discrete form */
     switch(Disctype)
@@ -398,13 +389,7 @@ void TSystemHyperElast3D::Init(CoeffFct3D *lincoeffs, BoundCondFunct3D *BoundCon
      exit(0);
    }
 #endif  
-       
-                 
-//       bool *SecondDer;
-//       SecondDer = DiscreteFormARhs->GetNeeds2ndDerivatives();
-//       cout << " SecondDer " << SecondDer[0] << endl; 
-//       exit(0);   
-       
+              
    // initilize the assemble    
    for(i=Start_Level;i<N_Levels;i++)
     {     
@@ -581,16 +566,10 @@ void TSystemHyperElast3D::Assemble()
       N_U_Current = U_Space[i]->GetN_DegreesOfFreedom();
       N_Active_Current  = U_Space[i]->GetActiveBound();     
       N_DirichletDof = N_U_Current - N_Active_Current;
- 
       
       // initialize matrices
       AMatRhsAssemble[i]->Reset();
- 
-//           bool *SecondDer;
-//       SecondDer = DiscreteFormARhs->GetNeeds2ndDerivatives();
-//       cout << " SecondDer " << SecondDer[0] << endl; 
-      
-      
+
       /** assemble */
       AMatRhsAssemble[i]->Assemble3D();
  
@@ -674,444 +653,18 @@ void TSystemHyperElast3D::Assemble()
 //       memcpy(SolArray[i]+2*N_U_Current+N_Active_Current, RhsArray[i]+2*N_U_Current+N_Active_Current, N_DirichletDof*SizeOfDouble);     
         
      } // for(i=Start_Level;i<N_Levels;i++)
-      
-
 //     cout << "Test Assemble " << endl; 
 //     exit(0);
     
 } // TSystemHyperElast3D::Assemble(T
-
-
-
-// void TSystemNSE3D::AssembleNonLinear(double **sol, double **rhs)
-// {
-//  int i, N_SquareMatrices, N_RectMatrices, N_Rhs, N_FESpaces;
-//  int N_U_Current, N_Active_Current, N_DirichletDof;
-//   
-//    for(i=Start_Level;i<N_Levels;i++)
-//     {    
-//       N_U_Current = U_Space[i]->GetN_DegreesOfFreedom();
-//       N_Active_Current  = U_Space[i]->GetActiveBound();     
-//       N_DirichletDof = N_U_Current - N_Active_Current;
-//       
-//       // reset the nonliner matrices
-//       AMatAssembleNonLinear[i]->Reset();
-//             
-//       // assemble the nonlinear matrix */      
-//       AMatAssembleNonLinear[i]->Assemble3D();      
-//       
-//        /** upwind */
-//       if( (Disctype==UPWIND) && (TDatabase::ParamDB->PROBLEM_TYPE!=STOKES) )
-//         {
-//          this->UpdateUpwind(i);
-//         }     
-//         
-//       // slip with boundary condition
-//       if (TDatabase::ParamDB->INTERNAL_SLIP_WITH_FRICTION >= 1)
-//       { 
-// // 	AMatRhsAssemble[i]->AssembleNavierSlip(); 
-//            
-//         fesp[0] =  U_Space[i];
-//         N_FESpaces = 1;
-//         N_SquareMatrices = 3;
-//         N_RectMatrices = 0;
-//         N_Rhs = 3;
-// 
-//         SQMATRICES[0] = SqmatrixA11[i];
-//         SQMATRICES[1] = SqmatrixA22[i];
-//         SQMATRICES[2] = SqmatrixA33[i];
-// 
-//         RHSs[0] = RhsArray[i];
-//         RHSs[1] = RhsArray[i] + N_U_Current;
-//         RHSs[2] = RhsArray[i] + 2*N_U_Current;
-// 
-//         fesprhs[0] =  U_Space[i];
-//         fesprhs[1] =  U_Space[i];
-//         fesprhs[2] =  U_Space[i];
-//   
-//         Assemble3DSlipBC(N_FESpaces, fesp,
-//                          N_SquareMatrices, SQMATRICES,
-//                          N_RectMatrices, NULL,
-//                          N_Rhs, RHSs, fesprhs,
-//                          NULL,
-//                          BoundaryConditions,
-//                          BoundaryValues,
-//                          NSEaux[i]);
-// 
-//        }// (TDatabase::ParamDB->INTERNAL_SLIP_WITH_FRICTION >=         
-//      
-//      /** no change in rhs, so no need to update */
-//       // set rhs for Dirichlet nodes 
-//       memcpy(SolArray[i]+N_Active_Current, RhsArray[i]+N_Active_Current, N_DirichletDof*SizeOfDouble);
-//       memcpy(SolArray[i]+N_U_Current+N_Active_Current, RhsArray[i]+N_U_Current+N_Active_Current, N_DirichletDof*SizeOfDouble); 
-//       memcpy(SolArray[i]+2*N_U_Current+N_Active_Current, RhsArray[i]+2*N_U_Current+N_Active_Current, N_DirichletDof*SizeOfDouble);     
-//         
-//       } //
-//       
-// } //TSystemNSE3D::AssembleNonLinear(
-// 
-// 
-// void TSystemNSE3D::GetResidual(double *sol, double *rhs, double *res, double &impuls_residual, double &residual)
-// {
-// 
-//      switch(NSEType)
-//       {
-//         case 1:
-//           SQMATRICES[0] = SqmatrixA11[N_Levels-1];
-//           MATRICES[0] = MatrixB1[N_Levels-1];
-//           MATRICES[1] = MatrixB2[N_Levels-1];
-//           MATRICES[2] = MatrixB3[N_Levels-1];
-//         break;
-// 
-//         case 2:
-//           SQMATRICES[0] = SqmatrixA11[N_Levels-1];
-//           MATRICES[0] = MatrixB1[N_Levels-1];
-//           MATRICES[1] = MatrixB2[N_Levels-1];
-//           MATRICES[2] = MatrixB3[N_Levels-1];
-//           MATRICES[3] = MatrixB1T[N_Levels-1];
-//           MATRICES[4] = MatrixB2T[N_Levels-1];
-//           MATRICES[5] = MatrixB3T[N_Levels-1];
-// 	  
-//         break;
-// 
-//         case 3:
-//           SQMATRICES[0] = SqmatrixA11[N_Levels-1];
-//           SQMATRICES[1] = SqmatrixA12[N_Levels-1];
-//           SQMATRICES[2] = SqmatrixA13[N_Levels-1];	  
-//           SQMATRICES[3] = SqmatrixA21[N_Levels-1];
-//           SQMATRICES[4] = SqmatrixA22[N_Levels-1];
-//           SQMATRICES[5] = SqmatrixA23[N_Levels-1]; 
-//           SQMATRICES[6] = SqmatrixA31[N_Levels-1];
-//           SQMATRICES[7] = SqmatrixA32[N_Levels-1];
-//           SQMATRICES[8] = SqmatrixA33[N_Levels-1];  
-// 
-//           MATRICES[0] = MatrixB1[N_Levels-1];
-//           MATRICES[1] = MatrixB2[N_Levels-1];
-//           MATRICES[2] = MatrixB3[N_Levels-1];
-//         break;
-// 
-//         case 4:
-//           SQMATRICES[0] = SqmatrixA11[N_Levels-1];
-//           SQMATRICES[1] = SqmatrixA12[N_Levels-1];
-//           SQMATRICES[2] = SqmatrixA13[N_Levels-1];	  
-//           SQMATRICES[3] = SqmatrixA21[N_Levels-1];
-//           SQMATRICES[4] = SqmatrixA22[N_Levels-1];
-//           SQMATRICES[5] = SqmatrixA23[N_Levels-1]; 
-//           SQMATRICES[6] = SqmatrixA31[N_Levels-1];
-//           SQMATRICES[7] = SqmatrixA32[N_Levels-1];
-//           SQMATRICES[8] = SqmatrixA33[N_Levels-1];  
-//           MATRICES[0] = MatrixB1[N_Levels-1];
-//           MATRICES[1] = MatrixB2[N_Levels-1];
-//           MATRICES[2] = MatrixB3[N_Levels-1];
-//           MATRICES[3] = MatrixB1T[N_Levels-1];
-//           MATRICES[4] = MatrixB2T[N_Levels-1];
-//           MATRICES[5] = MatrixB3T[N_Levels-1];
-//         break;
-//       } //  switch(NSEType)  
-// 
-// #ifdef _MPI      
-//     ParComm_U[N_Levels-1]->CommUpdate(sol);
-//     ParComm_P[N_Levels-1]->CommUpdate(sol+3*N_U);
-// #endif
-//        
-// 
-//     
-//     Defect(sqmatrices, matrices, sol, rhs, res); 
-//   
-// 
-//      
-// #ifdef _MPI
-//    double residual_scalar = 0.0;
-//    double sum =0.;
-//    int i,j,rank;
-//    MPI_Comm_rank(Comm, &rank);
-//    int *master = ParComm_U[N_Levels-1]->GetMaster();
-//    
-//    for(i=0;i<N_U;i++)
-//    {
-//      if(master[i]!=rank)    continue;
-//       BdComp
-//       residual_scalar += res[i      ]*res[i      ];
-//       residual_scalar += res[i+  N_U]*res[i+  N_U];
-//       residual_scalar += res[i+2*N_U]*res[i+2*N_U];
-// 
-//     }
-// 
-//     MPI_Allreduce(&residual_scalar, &sum, 1, MPI_DOUBLE, MPI_SUM, Comm);
-//     impuls_residual = (sum);
-// 
-//     master = ParComm_P[N_Levels-1]->GetMaster();
-//     for(i=0;i<N_P;i++)
-//     {
-//       if(master[i]!=rank)    continue;
-//       
-//       residual_scalar += res[i+3*N_U]*res[i+3*N_U];
-// 
-//     }
-//     
-//     sum = 0;
-//     MPI_Allreduce(&residual_scalar, &sum, 1, MPI_DOUBLE, MPI_SUM, Comm);
-//     residual = (sum);
-// 
-// #else
-//     impuls_residual  =  Ddot(3*N_U, res, res);
-//     residual         =  Ddot(N_TotalDOF, res, res); 
-// 
-// #endif
-//    
-// } // TSystemNSE3D::GetResidual
-// 
-// void TSystemNSE3D::Solve(double *sol, double *rhs)
-// {
-//   int N_LinIter=0;
-//   double summ = 0;
-//   double residual,residual_scalar = 0.0;
-//   double sum =0.;
-//   int i,j,rank;
-//   int *master;
-//    
-//     switch(SOLVER)
-//      {
-//       case AMG_SOLVE:
-//         cout << "AMG_SOLVE not yet implemented " <<endl;
-//       break;
-// 
-//       case GMG:
-// 
-//           if(TDatabase::ParamDB->SC_PRECONDITIONER_SADDLE == 5)
-//            {
-//             memcpy(Itmethod_sol, sol, N_TotalDOF*SizeOfDouble);
-//             memcpy(Itmethod_rhs, rhs, N_TotalDOF*SizeOfDouble);
-//            }
-//           // solve the linear system
-//           N_LinIter += Itmethod->Iterate(sqmatrices, matrices, Itmethod_sol, Itmethod_rhs);
-// 	  
-//           if(TDatabase::ParamDB->SC_PRECONDITIONER_SADDLE == 5)
-//            {
-//             memcpy(sol, Itmethod_sol, N_TotalDOF*SizeOfDouble);
-//             memcpy(rhs, Itmethod_rhs, N_TotalDOF*SizeOfDouble);
-//            }
-//           MG->RestrictToAllGrids();
-// 
-//       break;
-// 
-//       
-//       case DIRECT:
-//  
-//         switch(NSEType)
-//          {
-//           case 1:
-//            cout << "Solver not included for NSTYPE 1 in this version" <<endl;
-//             cout << "try NSTYPE 2 or 4 " <<endl;   
-// 	    exit(0);
-//           break;
-// 
-//           case 2:
-// 
-// 	    
-// #ifdef _MPI
-// 	    DS->Solve(sol, rhs, true);
-// 	    
-// #else	    
-// 
-// 	    
-// 	    
-// 	    DirectSolver(SqmatrixA11[N_Levels-1], MatrixB1T[N_Levels-1], MatrixB2T[N_Levels-1], MatrixB3T[N_Levels-1],
-//                           MatrixB1[N_Levels-1], MatrixB2[N_Levels-1], MatrixB3[N_Levels-1], rhs, sol);
-// 
-// #endif
-// 
-// 	    
-//           break;
-// 
-//           case 3:
-//            cout << "Solver not included for NSTYPE 3 in this version" <<endl;
-//             cout << "try NSTYPE 2 or 4 " <<endl;   
-//             exit(0);
-//           break;
-// 
-//           case 4:
-// #ifdef _MPI
-//         	DS->Solve(sol, rhs, true);
-// #endif
-// 	
-// #ifdef _OMPONLY
-// 	       if(TDatabase::ParamDB->DSType == 1)
-// 	         DS->Solve(sol, rhs, true);
-// 	       else{
-// 	         OutPut("Select Proper Solver" << endl);
-// 	         exit(0);
-// 	       }
-// #endif
-// 
-// #ifdef _SEQ
-// 
-//          
-//      
-//              DirectSolver(SqmatrixA11[N_Levels-1], SqmatrixA12[N_Levels-1], SqmatrixA13[N_Levels-1], 
-//                           SqmatrixA21[N_Levels-1], SqmatrixA22[N_Levels-1], SqmatrixA23[N_Levels-1],  
-//                           SqmatrixA31[N_Levels-1], SqmatrixA32[N_Levels-1], SqmatrixA33[N_Levels-1],  
-//                           MatrixB1T[N_Levels-1], MatrixB2T[N_Levels-1], MatrixB3T[N_Levels-1],
-//                           MatrixB1[N_Levels-1], MatrixB2[N_Levels-1], MatrixB3[N_Levels-1], rhs, sol,0);
-// 
-// #endif
-//           break;
-//          } //  switch(NSEType) 
-// 
-//       break;      
-//  
-//       default:
-//             OutPut("Unknown Solver" << endl);
-//             exit(4711);;
-//      }    
-//   
-// }
-// 
-// void TSystemNSE3D::MeasureErrors(DoubleFunct3D *ExactU1, DoubleFunct3D *ExactU2, DoubleFunct3D *ExactU3, DoubleFunct3D *ExactP,
-//                                   double *u_error, double *p_error)
-// {
-//   double errors[4];
-//   fesp[0] =  U_Space[N_Levels-1];
-// 
-//     fefct[0] = Velocity[N_Levels-1]->GetComponent(0);
-//     fefct[1] = Velocity[N_Levels-1]->GetComponent(1);
-//     fefct[2] = Velocity[N_Levels-1]->GetComponent(2);     
-// 
-//   
-//      if(NSEaux_error[N_Levels-1]==NULL)
-//       NSEaux_error[N_Levels-1] =  new TAuxParam3D(NSN_FESpacesVelo, NSN_FctVelo, NSN_ParamFctVelo, NSN_FEValuesVelo,
-//                                     fesp, fefct, NSFctVelo, NSFEFctIndexVelo, NSFEMultiIndexVelo,
-//                                     NSN_ParamsVelo, NSBeginParamVelo);
-// 
-//      // errors in first velocity component
-//       fefct[0]->GetErrors(ExactU1, 4, NSAllDerivatives, 2, L2H1Errors, NULL, NSEaux_error[N_Levels-1], 1, U_Space+(N_Levels-1), errors);
-//    
-//       u_error[0] = errors[0];
-//       u_error[1] = errors[1];
-//       
-//      // errors in second velocity component
-//       fefct[1]->GetErrors(ExactU2, 4, NSAllDerivatives, 2, L2H1Errors, NULL, NSEaux_error[N_Levels-1], 1, U_Space+(N_Levels-1), errors);
-//       u_error[2] = errors[0];
-//       u_error[3] = errors[1];     
-//      
-//       // errors in third velocity component
-//       fefct[2]->GetErrors(ExactU3, 4, NSAllDerivatives, 2, L2H1Errors, NULL, NSEaux_error[N_Levels-1], 1, U_Space+(N_Levels-1), errors);
-//       u_error[4] = errors[0];
-//       u_error[5] = errors[1];       
-//      
-//      
-//       // errors in pressure
-//       Pressure[N_Levels-1]->GetErrors(ExactP, 4, NSAllDerivatives, 2, L2H1Errors, NULL, NSEaux_error[N_Levels-1], 1,  P_Space+(N_Levels-1), errors);     
-//       p_error[0] = errors[0];
-//       p_error[1] = errors[1]; 
-// }
-//     
-// 
-// void TSystemNSE3D::FindFreeSurfJoints(int level, int Region_ID)
-// {
-//   int i,j, N_Joints;
-//   int N_Cells, N_FreeJoints;
-//   
-//   TBaseCell *cell, *neigh, *neigh0, *neigh1;
-//   TJoint *joint;
-//   TCollection *Coll;
-//   TIsoJointEqN *isojoint;
-// 
-//   Coll = U_Space[level]->GetCollection();  
-//   N_Cells = Coll->GetN_Cells();
-//   N_FreeJoints=0;
-// 
-//   for(i=0;i<N_Cells;i++)
-//   {
-//     cell = Coll->GetCell(i);
-//     if(cell->GetRegionID() == Region_ID)
-//     {
-//       N_Joints = cell->GetN_Joints();
-//       for(j=0;j<N_Joints;j++)
-//        {
-//         joint = cell->GetJoint(j);
-//         if(joint->GetType()==InterfaceJoint3D || joint->GetType()==IsoInterfaceJoint3D || joint->GetType()==IsoBoundFace)
-//          {  
-//           N_FreeJoints++;
-//          }
-//        } // endfor j
-//     } // end ID == 1
-//   } // endfor i
-// 
-//   N_FreeSurfFaces[level] = N_FreeJoints;
-//   
-//   if(N_FreeJoints)
-//    {
-//     FreeSurfCellNumbers[level] = new int[N_FreeJoints];
-//     FreeSurfJointNumbers[level] = new int[N_FreeJoints];    
-//    }
-//    
-//   N_FreeJoints = 0;
-//   for(i=0;i<N_Cells;i++)
-//   {
-//     cell = Coll->GetCell(i);
-//     if(cell->GetRegionID() == Region_ID)
-//     {
-//       N_Joints = cell->GetN_Joints();
-//       for(j=0;j<N_Joints;j++)
-//        {
-//         joint = cell->GetJoint(j);
-//         if(joint->GetType()==InterfaceJoint3D || joint->GetType()==IsoInterfaceJoint3D || joint->GetType()==IsoBoundFace)
-//          { 
-//           FreeSurfCellNumbers[level][N_FreeJoints] = i;
-//           FreeSurfJointNumbers[level][N_FreeJoints] = j;
-//           N_FreeJoints++;
-//          }
-//        } // endfor j
-//     } // end ID == 1
-//   } // endfor i
-//   
-//   
-// //   cout << " FindFreeSurfJoints done " << N_FreeJoints << endl;
-// //   exit(0);  
-// }
-
-
-
-void TSystemHyperElast3D::InitHyperDiscreteForms(TDiscreteForm3D *DiscreteFormGalerkin)
-{
-/*       
-  char GalerkinString[] = "Galerkin";
-  char rhs[] = "rhs";
-  char all[] = "all";
-  
-  DiscreteFormGalerkin = NULL; 
-   
-  int N_Terms = 4;
-  MultiIndex3D Derivatives[4] = { D100, D010, D001, D000};
-  int SpaceNumbers[4] = { 0, 0, 0, 0};
-  int N_Matrices = 9;
-  int RowSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  int ColumnSpace[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  int N_Rhs = 3;
-  int RhsSpace[3] = { 0, 0, 0 };
-  
-  
-  DiscreteFormGalerkin = new TDiscreteForm3D(GalerkinString, all,  N_Terms, Derivatives, SpaceNumbers,
-                                             N_Matrices, N_Rhs, RowSpace, ColumnSpace, RhsSpace, Galerkin3D, LinCoeffs[0], NULL);         
-  
-  
-      bool *SecondDer;
-      SecondDer = DiscreteFormGalerkin->GetNeeds2ndDerivatives();
-    
-                 cout << "DiscreteFormGalerkin SecondDer " << SecondDer[0] << endl; */
-          
-                 
-}
-
 
 void TSystemHyperElast3D::InitHyperAuxParm(int i)
 {
   int Hyper_N_FESpace = 1;
   int Hyper_N_FEFunction = 3;
   int Hyper_N_ParamFct = 1;
-  int Hyper_N_FEValues = 12;
-  int Hyper_N_ParamValues = 15;                                      
+  int Hyper_N_FEValues = 9;
+  int Hyper_N_ParamValues = 12;                                      
                                             
   fesp_aux[0] =  U_Space[i];
      
@@ -1122,12 +675,6 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
   Hyperaux[i] =  new TAuxParam3D(Hyper_N_FESpace, Hyper_N_FEFunction, Hyper_N_ParamFct, Hyper_N_FEValues,
                                 fesp_aux, fefct_aux+(i*3), Hyper_ParamFct, Hyper_FEFctIndex, Hyper_FEMultiIndex,
                                 Hyper_N_ParamValues, Hyper_BeginParam);
-    
-  
-  
-//         cout << " Hyper_FEMultiIndex   3D: " << Hyper_FEMultiIndex[0] << endl; 
-  
-  
 }
 
 
@@ -1147,8 +694,6 @@ void Galerkin3D(double Mult, double *coeff,
   double *Orig0, *Orig1, *Orig2, *Orig3, *Orig4;
   int i,j, N_U;
   double c0, c1, c2, c3;
-  double u1, u2, u3, u1x, u2x, u3x;
-  double u1y, u2y, u3y, u1z, u2z, u3z;
 
   MatrixA11 = LocMatrices[0];
   MatrixA12 = LocMatrices[1];
@@ -1167,10 +712,10 @@ void Galerkin3D(double Mult, double *coeff,
 
   N_U = N_BaseFuncts[0];
 
-  Orig0 = OrigValues[0]; // u_x
-  Orig1 = OrigValues[1]; // u_y
-  Orig2 = OrigValues[2]; // u_z
-  Orig3 = OrigValues[3]; // u
+  Orig0 = OrigValues[0]; // phi_x
+  Orig1 = OrigValues[1]; // phi_y
+  Orig2 = OrigValues[2]; // phi_z
+  Orig3 = OrigValues[3]; // phi
 
 
   c0 = coeff[0]; // nu
@@ -1178,7 +723,7 @@ void Galerkin3D(double Mult, double *coeff,
   c2 = coeff[2]; // f2
   c3 = coeff[3]; // f3
 
-  u1 = param[0]; // u1old
+/*  u1 = param[0]; // u1old
   u2 = param[1]; // u2old
   u3 = param[2]; // u3old
   u1x = param[3]; // u1old
@@ -1189,7 +734,7 @@ void Galerkin3D(double Mult, double *coeff,
   u3y = param[8]; // u3old  
   u1z = param[9]; // u1old
   u2z = param[10]; // u2old
-  u3z = param[11]; // u3old  
+  u3z = param[11]; // u3old */ 
 
   for(i=0;i<N_U;i++)
   {
@@ -1221,7 +766,7 @@ void Galerkin3D(double Mult, double *coeff,
       ansatz001 = Orig2[j];
       ansatz000 = Orig3[j];
             
-      MatrixRowA11[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 0);
+/*      MatrixRowA11[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 0);
       MatrixRowA12[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 1, 0);
       MatrixRowA13[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 0);     
       MatrixRowA21[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 1);          
@@ -1229,7 +774,7 @@ void Galerkin3D(double Mult, double *coeff,
       MatrixRowA23[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 1);          
       MatrixRowA31[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 2);          
       MatrixRowA32[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 1, 2);          
-      MatrixRowA33[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 2);     
+      MatrixRowA33[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 2);*/     
       
     } // endfor j
   } // endfor i
@@ -1237,32 +782,77 @@ void Galerkin3D(double Mult, double *coeff,
 }
 
 void HyperParamsVelo(double *in, double *out)
-{
-    
-  out[0] = in[3]; // u1old
-  out[1] = in[4]; // u2old
-  out[2] = in[5]; // u3old
+{  
+  /** based on the elastic model, S_ij, 0< i,j < 9 vales will be returned */
 
-  out[3] = in[6]; // D1u1
-  out[4] = in[7]; // D1u2
-  out[5] = in[8]; // D1u3
+  int i, j;
+  const double c1=1.0;
+  const double c2=1.0;
+  const double D1=1.0;
+ 
+  double I1, I3, I3pow, k1, k2, I1_bar;
+  double F[9], C[9];
   
-  out[6] = in[9]; // D2u1
-  out[7] = in[10]; // D2u2
-  out[8] = in[11]; // D2u3
+  // grad U
+  for(int i =0; i<9; i++)
+    F[i] = in[3+i];
   
-  out[9] = in[12]; // D3u1
-  out[10] = in[13]; // D3u2
-  out[11] = in[14]; // D3u3
+  // grad U + I
+  F[0] += 1.0; 
+  F[4] += 1.0;
+  F[8] += 1.0;
+  
+  // C = F^T F
+  MatrixMult(F, F, C, 't', 'n');
+  
+  // I1 = tr(C)
+  I1 = C[0] +C[4] + C[8];
+  
+  // I3=det(C), Blas will retun LU decomposed value in C
+  I3 = MatrixDeterminant(C, 3);
+  I3pow = pow(I3, -1.0/3.0);
+  
+  // compute C^{-1}
+  MatrixInverse(C, 3, 1);
+  
+  I1_bar = I1 * I3pow;
+  
+  for(i=0; i<9; i++)
+   out[i] = 0.;
+       
+  k1 = c1 + c2*I1_bar - 6.*c2;
+  k2 = 2 * (I3-1.) * I3;
+  for(i=0; i<9; i++)
+   {
+    out[i] = k1*(I3pow - (I1_bar*C[i])/3) + (k2* C[i])/D1;;
+   }
+  
+  
+  
+//   out[0] = in[3]; // u1old
+//   out[1] = in[4]; // u2old
+//   out[2] = in[5]; // u3old
+// 
+//   out[3] = in[6]; // D1u1
+//   out[4] = in[7]; // D1u2
+//   out[5] = in[8]; // D1u3
+//   
+//   out[6] = in[9]; // D2u1
+//   out[7] = in[10]; // D2u2
+//   out[8] = in[11]; // D2u3
+  
+// //   out[9] = in[12]; // D3u1
+// //   out[10] = in[13]; // D3u2
+// //   out[11] = in[14]; // D3u3
 
-  out[12] = in[0]; // x - coordinate  
-  out[13] = in[1]; // y - coordinate  
-  out[14] = in[2]; // z - coordinate 
-    
+//   out[9] = in[0]; // x - coordinate  
+//   out[10] = in[1]; // y - coordinate  
+//   out[11] = in[2]; // z - coordinate 
+ 
+//  cout << " stress cal " <<endl;
+//  exit(0);
+ 
 }
-
-
-//Evaluation of Matrix Entries 
 
 double Piola_Kir(double *param, double test100, double test010, double test001, double test000, double ansatz100, double ansatz010, double ansatz001, double ansatz000, int row, int col)
 {
@@ -1283,17 +873,17 @@ double Piola_Kir(double *param, double test100, double test010, double test001, 
  double c_kl, c_ik, c_jl, c_il, c_jk;
  double entry;
 
- for(int i =0; i<=8; i++)
+ for(int i =0; i<9; i++)
   F[i] = param[3+i] + I[i] ;
  
  MatrixMult(F, F, C, 't', 'n');
  I_first = C[0] +C[4] + C[8];
  
  memcpy (temp_1, C, sizeof(temp_1)); 	
- I_third = MatrixDeterminant(temp_1);
+//  I_third = MatrixDeterminant(temp_1, 3);
  I_inv = pow(I_third, -1.0/3.0);
  memcpy (C_inv, C, sizeof(temp_1));
- MatrixInverse(C_inv);
+//  MatrixInverse(C_inv, 3, 1);
  I_1_bar = I_first * I_inv;
 	
  for (int i = 0; i < 3; i++)

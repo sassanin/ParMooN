@@ -88,10 +88,10 @@ void Dadd(int n, double alpha, double *x);
 double Dnorm(int n, double *x);
 
 /** returns detrminant of a 3x3  matrix passed as double array a where a[i, j] = a(lda*i +j) */
-double MatrixDeterminant(double *a);
+double MatrixDeterminant(double *a, int dimension);
 
 /** returns inverse of a 3x3  matrix passed as double array a where a[i, j] = a(lda*i +j) */
-void MatrixInverse(double *a);
+void MatrixInverse(double *a, int dimension, int flag);
 
 /** a 3x3 Mat Mult */
 void MatrixMult(double *a, double *b, double *c, char TRANSA, char TRANSB);

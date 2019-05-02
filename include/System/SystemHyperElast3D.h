@@ -151,7 +151,6 @@ class TSystemHyperElast3D
 //    void UpdateUpwind(int i);
     
 //    void UpdateLPS();
-      void InitHyperDiscreteForms(TDiscreteForm3D *DiscreteFormGalerkin);
       void InitHyperAuxParm(int i);
   public:
     /** constructor */
