@@ -314,13 +314,15 @@ void TAssembleMat3D::Assemble3D()
 //========================================================================
   
   double *param;
-  for(i=0;i<N_Cells;i++)
-  {
-//     cout<<"calculating the viscosity:: "<<i<<endl;
-    cell = Coll->GetCell(i);
-    switch (TDatabase::ParamDB->CELL_MEASURE)
+  if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBLEMESHMAT)
+   {  
+    for(i=0;i<N_Cells;i++)
     {
-	case 0: // diameter
+//     cout<<"calculating the viscosity:: "<<i<<endl;
+     cell = Coll->GetCell(i);
+     switch (TDatabase::ParamDB->CELL_MEASURE)
+     {
+      case 0: // diameter
 	    hK = cell->GetDiameter();
 	    //OutPut("diameter " << hK <<endl);
 	    break;
@@ -340,7 +342,7 @@ void TAssembleMat3D::Assemble3D()
 	default: // diameter
 	    hK = cell->GetDiameter();
 	    break;
-    }
+      }
 
     //========================================================================
     // find local used elements on this cell
@@ -363,10 +365,8 @@ void TAssembleMat3D::Assemble3D()
                                     N_Points, xi, eta, zeta, weights,
                                     X, Y, Z, AbsDetjk);    
 
-    AuxParam->GetParameters(N_Points, cell, i, xi, eta, zeta, X, Y, Z, Param);
 
-    if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBLEMESHMAT)
-     {
+      AuxParam->GetParameters(N_Points, cell, i, xi, eta, zeta, X, Y, Z, Param);         
       //calculating turbulent viscosity variant
       for(int il=0;il<N_Points;il++)
        {
@@ -385,7 +385,6 @@ void TAssembleMat3D::Assemble3D()
            TDatabase::ParamDB->viscosity_min = mu;
           }  
         } // for(int il=0;il<N_Points;il++) for calculating turbulent viscosity
-     } // if(TDatabase::ParamDB->DISCTYPE==== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBLEMESHMAT)
   }
 
 #ifdef _MPI
@@ -400,7 +399,7 @@ if(TDatabase::ParamDB->DISCTYPE== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBL
   TDatabase::ParamDB->viscosity_min = recieve;
  }
 #endif
-        
+} // if(TDatabase::ParamDB->DISCTYPE==== VMS_PROJECTION && !TDatabase::ParamDB->ASSEMBLEMESHMAT) 
 // #ifdef _MPI
 // int rank;
 // MPI_Comm_rank(MPI_COMM_WORLD,&rank);

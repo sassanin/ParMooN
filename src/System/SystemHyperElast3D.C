@@ -664,7 +664,7 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
   int Hyper_N_FEFunction = 3;
   int Hyper_N_ParamFct = 1;
   int Hyper_N_FEValues = 9;
-  int Hyper_N_ParamValues = 12;                                      
+  int Hyper_N_ParamValues = 93;                                      
                                             
   fesp_aux[0] =  U_Space[i];
      
@@ -779,19 +779,27 @@ void Galerkin3D(double Mult, double *coeff,
     } // endfor j
   } // endfor i
 
+     for (i = 0; i < 90; i++)
+    cout << "param " << i << ": " << param[i] <<endl;
+    
+ cout << " Galerkin3D " <<endl;
+ exit(0);
+ 
+ 
 }
 
 void HyperParamsVelo(double *in, double *out)
 {  
   /** based on the elastic model, S_ij, 0< i,j < 9 vales will be returned */
 
-  int i, j;
+  int i, j, k, l, J, K, L, disp;
   const double c1=1.0;
   const double c2=1.0;
   const double D1=1.0;
  
-  double I1, I3, I3pow, k1, k2, I1_bar;
-  double F[9], C[9];
+  double I1, I3, I3pow, k1, k2, I1_bar, *OUT;
+  double  F[9], C[9];
+  double cij, cik, cjk, ckl, cil, cjl; 
   
   // grad U
   for(int i =0; i<9; i++)
@@ -828,27 +836,44 @@ void HyperParamsVelo(double *in, double *out)
    }
   
   
-  
-//   out[0] = in[3]; // u1old
-//   out[1] = in[4]; // u2old
-//   out[2] = in[5]; // u3old
-// 
-//   out[3] = in[6]; // D1u1
-//   out[4] = in[7]; // D1u2
-//   out[5] = in[8]; // D1u3
-//   
-//   out[6] = in[9]; // D2u1
-//   out[7] = in[10]; // D2u2
-//   out[8] = in[11]; // D2u3
-  
-// //   out[9] = in[12]; // D3u1
-// //   out[10] = in[13]; // D3u2
-// //   out[11] = in[14]; // D3u3
+  OUT = out+9;
+  k1 = I1_bar*(c1 + 2.*c2*I1_bar- 6.*c2)/6.0;
+  for (i = 0; i < 3; i++)
+   {
+    disp = 3*i;
+    for(j = 0; j < 3; j++)
+     {
+      J = 3*j;
+      disp +=J;     
+      cij = C[J+i];
+      k2 = 2*c2*(I3pow - I1_bar*cij/3.0);
+      for(k =0; k< 3; k++)
+       {
+        K = 3*k;
+        disp +=K;         
+        cik= C[K +i];
+        cjk= C[K +j];
+        for(l=0; l<3 ;l++)
+         {
+          L = 3*l;
+          ckl= C[L +k];
+          cjl= C[L +j];
+          cil= C[L +i];
+        
+         OUT[disp + l] = k2*(I3pow - I1_bar * ckl/3.0)  +
+                  (-I3pow * ckl)/3.0 - (I3pow - I1_bar * ckl/3.0)*cij - k1*(cik*cjl + cil*cjk) +
+                  (2./D1) * ( I3*(I3-1)*ckl*cij + I3*I3*ckl*cij + I3*(I3-1)*(cik*cjl + cil*cjk)/2.0);
+         }
+       }
+    }
+  }
 
 //   out[9] = in[0]; // x - coordinate  
 //   out[10] = in[1]; // y - coordinate  
 //   out[11] = in[2]; // z - coordinate 
- 
+//   for (i = 0; i < 90; i++)
+//     cout << "out " << i << ": " << out[i] <<endl;
+//     
 //  cout << " stress cal " <<endl;
 //  exit(0);
  
@@ -865,12 +890,12 @@ double Piola_Kir(double *param, double test100, double test010, double test001, 
  double * F_der = new double[9]; 
  double *C = new double[9];
  double *C_inv = new double[9];
- double I_first, I_third, I_inv, I_1_bar, c_ij,S_ij =0, val;
+ double I_first, I_third, I_inv, I_1_bar, cij,S_ij =0, val;
  double *temp_1 = new double[9];
  double *temp_2 = new double[9];
  double *S= new double[9];
  double *S_der = new double[9];
- double c_kl, c_ik, c_jl, c_il, c_jk;
+ double ckl, cik, cjl, cil, cjk;
  double entry;
 
  for(int i =0; i<9; i++)
@@ -890,8 +915,8 @@ double Piola_Kir(double *param, double test100, double test010, double test001, 
  {
   for(int j = 0; j < 3; j++)
   {
-   c_ij = temp_1[3*j + i];
-   val = (c1 + c2*I_1_bar - 6*c2)*(I_inv - (I_1_bar*c_ij)/3) + (2 * (I_third-1) * I_third * c_ij)/D1;
+   cij = temp_1[3*j + i];
+   val = (c1 + c2*I_1_bar - 6*c2)*(I_inv - (I_1_bar*cij)/3) + (2 * (I_third-1) * I_third * cij)/D1;
    S[3*j + i] = val;
   }
  }
@@ -953,20 +978,20 @@ else if(row==2)
  {
   for(int j = 0; j < 3; j++)
   {
-   c_ij = C_inv[3*j +i];
+   cij = C_inv[3*j +i];
    S_ij =0;
    for(int k =0; k< 3; k++)
    {
     for(int l=0; l<3 ;l++)
     {
-     c_kl= C_inv[3*l +k];
-     c_ik= C_inv[3*k +i];
-     c_jl= C_inv[3*l +j];
-     c_il= C_inv[3*l +i];
-     c_jk= C_inv[3*k +j];
-    double a = 2*c2*(I_inv - I_1_bar*c_ij/3.0)*(I_inv - I_1_bar * c_kl/3.0);
-    double b = (-1.0/3.0) * ( I_inv * c_kl - (I_inv - (-1.0/3.0)*I_1_bar * c_kl)*c_ij - (1.0/2.0)*(c_ik*c_jl + c_il*c_jk)) * (c1 + 2*c2*I_1_bar- 6*c2);
-    double c = (2/D1)*(I_third*(I_third-1)*c_kl*c_ij + pow(I_third, 2.0)*c_kl*c_ij +(I_third/2.0)*(I_third-1)*(c_ik*c_jl + c_il*c_jk));
+     ckl= C_inv[3*l +k];
+     cik= C_inv[3*k +i];
+     cjl= C_inv[3*l +j];
+     cil= C_inv[3*l +i];
+     cjk= C_inv[3*k +j];
+    double a = 2*c2*(I_inv - I_1_bar*cij/3.0)*(I_inv - I_1_bar * ckl/3.0);
+    double b = (-1.0/3.0) * ( I_inv * ckl - (I_inv - (-1.0/3.0)*I_1_bar * ckl)*cij - (1.0/2.0)*(cik*cjl + cil*cjk)) * (c1 + 2*c2*I_1_bar- 6*c2);
+    double c = (2/D1)*(I_third*(I_third-1)*ckl*cij + pow(I_third, 2.0)*ckl*cij +(I_third/2.0)*(I_third-1)*(cik*cjl + cil*cjk));
     val = a + b + c;
     S_ij += val * H[3*j +i];
     }

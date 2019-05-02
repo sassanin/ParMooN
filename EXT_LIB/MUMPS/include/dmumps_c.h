@@ -1,15 +1,51 @@
 /*
  *
- *  This file is part of MUMPS 5.1.2, released
- *  on Mon Oct  2 07:37:01 UTC 2017
+ *  This file is part of MUMPS 5.0.0, released
+ *  on Fri Feb 20 08:19:56 UTC 2015
  *
  *
- *  Copyright 1991-2017 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
+ *  Copyright 1991-2015 CERFACS, CNRS, ENS Lyon, INP Toulouse, Inria,
  *  University of Bordeaux.
  *
  *  This version of MUMPS is provided to you free of charge. It is
- *  released under the CeCILL-C license:
- *  http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
+ *  released under the CeCILL-C license,
+ *  http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html, 
+ *  except for the external and optional ordering PORD, 
+ *  in separate directory PORD, which is public domain (see PORD/README).
+ *
+ *  You can acknowledge (using references [1] and [2]) the contribution of
+ *  this package in any scientific publication dependent upon the use of
+ *  the package. Please use reasonable endeavours to notify the authors
+ *  of the package of this publication.
+ *
+ *   [1] P. R. Amestoy, I. S. Duff, J. Koster and  J.-Y. L'Excellent,
+ *   A fully asynchronous multifrontal solver using distributed dynamic
+ *   scheduling, SIAM Journal of Matrix Analysis and Applications,
+ *   Vol 23, No 1, pp 15-41 (2001).
+ *
+ *   [2] P. R. Amestoy, A. Guermouche, J.-Y. L'Excellent and
+ *   S. Pralet, Hybrid scheduling for the parallel solution of linear
+ *   systems. Parallel Computing Vol 32 (2), pp 136-156 (2006).
+ *
+ *  As a counterpart to the access to the source code and rights to copy,
+ *  modify and redistribute granted by the license, users are provided only
+ *  with a limited warranty  and the software's author,  the holder of the
+ *  economic rights,  and the successive licensors  have only  limited
+ *  liability. 
+ *
+ *  In this respect, the user's attention is drawn to the risks associated
+ *  with loading,  using,  modifying and/or developing or reproducing the
+ *  software by the user in light of its specific status of free software,
+ *  that may mean  that it is complicated to manipulate,  and  that  also
+ *  therefore means  that it is reserved for developers  and  experienced
+ *  professionals having in-depth computer knowledge. Users are therefore
+ *  encouraged to load and test the software's suitability as regards their
+ *  requirements in conditions enabling the security of their systems and/or 
+ *  data to be ensured and,  more generally, to use and operate it in the 
+ *  same conditions as regards security. 
+ *
+ *  The fact that you are presently reading this means that you have had
+ *  knowledge of the CeCILL-C license and that you accept its terms.
  *
  */
 
@@ -28,10 +64,10 @@ extern "C" {
 
 #ifndef MUMPS_VERSION
 /* Protected in case headers of other arithmetics are included */
-#define MUMPS_VERSION "5.1.2"
+#define MUMPS_VERSION "5.0.0"
 #endif
 #ifndef MUMPS_VERSION_MAX_LEN
-#define MUMPS_VERSION_MAX_LEN 30
+#define MUMPS_VERSION_MAX_LEN 25
 #endif
 
 /*
@@ -45,7 +81,7 @@ typedef struct {
     MUMPS_INT      icntl[40];
     MUMPS_INT      keep[500];
     DMUMPS_REAL    cntl[15];
-    DMUMPS_REAL    dkeep[230];
+    DMUMPS_REAL    dkeep[130];
     MUMPS_INT8     keep8[150];
     MUMPS_INT      n;
 
@@ -54,14 +90,12 @@ typedef struct {
 
     /* Assembled entry */
     MUMPS_INT      nz;
-    MUMPS_INT8     nnz;
     MUMPS_INT      *irn;
     MUMPS_INT      *jcn;
     DMUMPS_COMPLEX *a;
 
     /* Distributed entry */
     MUMPS_INT      nz_loc;
-    MUMPS_INT8     nnz_loc;
     MUMPS_INT      *irn_loc;
     MUMPS_INT      *jcn_loc;
     DMUMPS_COMPLEX *a_loc;
@@ -116,9 +150,7 @@ typedef struct {
     /* To save the matrix in matrix market format */
     char write_problem[256];
     MUMPS_INT      lwk_user;
-    /* For save/restore feature */
-    char save_dir[256];
-    char save_prefix[256];
+
 } DMUMPS_STRUC_C;
 
 
