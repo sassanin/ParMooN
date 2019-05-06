@@ -664,7 +664,7 @@ void TSystemHyperElast3D::InitHyperAuxParm(int i)
   int Hyper_N_FEFunction = 3;
   int Hyper_N_ParamFct = 1;
   int Hyper_N_FEValues = 9;
-  int Hyper_N_ParamValues = 93;                                      
+  int Hyper_N_ParamValues = 99;                                      
                                             
   fesp_aux[0] =  U_Space[i];
      
@@ -735,7 +735,12 @@ void Galerkin3D(double Mult, double *coeff,
   u1z = param[9]; // u1old
   u2z = param[10]; // u2old
   u3z = param[11]; // u3old */ 
-
+ 
+  double Sder[9];
+  double *g = new double[9];
+  double h[9];
+  double F[9];
+  double v1[3]; 
   for(i=0;i<N_U;i++)
   {
     MatrixRowA11 = MatrixA11[i];
@@ -758,35 +763,123 @@ void Galerkin3D(double Mult, double *coeff,
     Rhs1[i] += val1*c1;
     Rhs2[i] += val1*c2;
     Rhs3[i] += val1*c3;
-
+    
+    
     for(j=0;j<N_U;j++)
-    {
+    { 
+      
       ansatz100 = Orig0[j];
       ansatz010 = Orig1[j];
       ansatz001 = Orig2[j];
       ansatz000 = Orig3[j];
-            
-/*      MatrixRowA11[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 0);
-      MatrixRowA12[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 1, 0);
-      MatrixRowA13[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 0);     
-      MatrixRowA21[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 1);          
-      MatrixRowA22[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 1, 1);          
-      MatrixRowA23[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 1);          
-      MatrixRowA31[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 0, 2);          
-      MatrixRowA32[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 1, 2);          
-      MatrixRowA33[j] += Mult * Piola_Kir(param, test100, test010, test001, test000, ansatz100,ansatz010, ansatz001, ansatz000, 2, 2);*/     
+
+      for(int i =0; i<9; i++)
+         F[i] = param[90+i]; 
+      int d;
+      //===============Blocks A11, A21, and A31 ================//
+      //Construction of derivative of (F^t)F matrix ; H;
+      v1[0] = param[90]; v1[1] = param[93]; v1[2] = param[96];
+      
+      for(int k =0; k < 3; k++){
+       int d = 3*k;
+       h[d] = ansatz100*v1[k];
+       h[d+1] = ansatz010*v1[k];
+       h[d+2] = ansatz001*v1[k];
+       }
+      for( int k =0; k < 3; k++){
+       h[k] += ansatz100*v1[k];
+       h[k+3] += ansatz010*v1[k];
+       h[k+6] += ansatz001*v1[k];
+       }
+      //=====================================================//
+      for(int l =0; l < 9; l++){
+        Sder[l] = 0;
+        d = 9*(l+1);
+        for(int k =0 ; k< 9; k++){ 
+        Sder[l] += h[k]*param[d+k];
+         }
+       }
+      MatrixMult(F, Sder,g, 'n', 'n') ;
+      g[0] += (ansatz100*param[0] + ansatz010*param[1] + ansatz001*param[2]);
+      g[3] += (ansatz100*param[3] + ansatz010*param[4] + ansatz001*param[5]);
+      g[6] += (ansatz100*param[6] + ansatz010*param[7] + ansatz001*param[8]);
+      MatrixRowA11[j] += Mult * (test100*g[0] + test010*g[3] + test001*g[6]);
+      MatrixRowA21[j] += Mult * (test100*g[1] + test010*g[4] + test001*g[7]);
+      MatrixRowA31[j] += Mult * (test100*g[2] + test010*g[5] + test001*g[8]);
+
+      //===============Blocks A12, A22, and A32 ================//      
+      //Construction of derivative of (F^t)F matrix ; H;
+      v1[0] = param[91]; v1[1] = param[94]; v1[2] = param[97];
+      for(int k =0; k < 3; k++){
+       int d = 3*k;
+       h[d] = ansatz100*v1[k];
+       h[d+1] = ansatz010*v1[k];
+       h[d+2] = ansatz001*v1[k];
+       }
+      for( int k =0; k < 3; k++){
+       h[k] += ansatz100*v1[k];
+       h[k+3] += ansatz010*v1[k];
+       h[k+6] += ansatz001*v1[k];
+       }
+      //=====================================================//
+      for(int l =0; l < 9; l++){
+        Sder[l] = 0;
+        d = 9*(l+1);
+        for(int k =0 ; k< 9; k++){ 
+        Sder[l] += h[k]*param[d+k];
+         }
+       }
+       MatrixMult(F, Sder,g, 'n', 'n') ;
+       g[1] += (ansatz100*param[0] + ansatz010*param[1] + ansatz001*param[2]);
+       g[4] += (ansatz100*param[3] + ansatz010*param[4] + ansatz001*param[5]);
+       g[7] += (ansatz100*param[6] + ansatz010*param[7] + ansatz001*param[8]);
+       MatrixRowA12[j] += Mult * (test100*g[0] + test010*g[3] + test001*g[6]);
+       MatrixRowA22[j] += Mult * (test100*g[1] + test010*g[4] + test001*g[7]);
+       MatrixRowA32[j] += Mult * (test100*g[2] + test010*g[5] + test001*g[8]);
+
+      //===============Blocks A13, A23, and A33 ================//
+
+      v1[0] = param[92]; v1[1] = param[95]; v1[2] = param[98];
+      for(int k =0; k < 3; k++){
+       int d = 3*k;
+       h[d] = ansatz100*v1[k];
+       h[d+1] = ansatz010*v1[k];
+       h[d+2] = ansatz001*v1[k];
+       }
+      for( int k =0; k < 3; k++){
+       h[k] += ansatz100*v1[k];
+       h[k+3] += ansatz010*v1[k];
+       h[k+6] += ansatz001*v1[k];
+       }
+      //=====================================================//
+      for(int l =0; l < 9; l++){
+        Sder[l] = 0;
+        d = 9*(l+1);
+        for(int k =0 ; k< 9; k++){ 
+        Sder[l] += h[k]*param[d+k];
+         }
+       }
+       MatrixMult(F, Sder,g, 'n', 'n') ;
+       g[2] += (ansatz100*param[0] + ansatz010*param[1] + ansatz001*param[2]);
+       g[5] += (ansatz100*param[3] + ansatz010*param[4] + ansatz001*param[5]);
+       g[8] += (ansatz100*param[6] + ansatz010*param[7] + ansatz001*param[8]);
+       MatrixRowA13[j] += Mult * (test100*g[0] + test010*g[3] + test001*g[6]);
+       MatrixRowA23[j] += Mult * (test100*g[1] + test010*g[4] + test001*g[7]);
+       MatrixRowA33[j] += Mult * (test100*g[2] + test010*g[5] + test001*g[8]);
+     
       
     } // endfor j
   } // endfor i
 
-     for (i = 0; i < 90; i++)
-    cout << "param " << i << ": " << param[i] <<endl;
-    
- cout << " Galerkin3D " <<endl;
- exit(0);
+//     for (i = 0; i < 99; i++)
+//   cout << "param " << i << ": " << param[i] <<endl;
+   
+// cout << " Galerkin3D " <<endl;
+// exit(0);
  
  
 }
+
 
 void HyperParamsVelo(double *in, double *out)
 {  
@@ -868,6 +961,9 @@ void HyperParamsVelo(double *in, double *out)
     }
   }
 
+    for(i =0; i<9; i++)
+      out[90+i] = F[i];
+    
 //   out[9] = in[0]; // x - coordinate  
 //   out[10] = in[1]; // y - coordinate  
 //   out[11] = in[2]; // z - coordinate 
