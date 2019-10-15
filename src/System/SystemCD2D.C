@@ -208,23 +208,30 @@ void TSystemCD2D::Assemble(TAuxParam2D *aux, double *sol, double *rhs)
 
 void TSystemCD2D::Solve(double *sol, double *rhs)
 {
+    //SOLVER --  the value is obtained from cd2d.dat from the user and stored in TPARAMDB class under the variable SOLVER_TYPE  // 
+    // SOLVER_TYPE =  1 ---> DIRECT SOLVER 
+    // SOLVER_TYPE =  0 ---> AMG 
+    // SOLVER_TYPE =  2 ---> GMG
+    //Solver type = 1 is the default value set for SOLVER_TYPE in /src/database.h // 
     switch(SOLVER)
-     {
-      case AMG_SOLVE:
+     {   
+    case 0:
          Solver(sqmatrixA, rhs, sol);
-      break;
-
-      case GMG:
-        cout << "GMG solver not yet implemented " <<endl;
-      break;
-
-      case DIRECT:
+    break;
+     
+    case 1:
         DirectSolver(sqmatrixA, rhs, sol);
-      break;      
- 
-      default:
-            OutPut("Unknown Solver" << endl);
-            exit(4711);;
+    break;    
+    
+    case 2:
+        cout << "GMG solver not yet implemented for CD2D Process" <<endl;
+        cout << "Set the value of solver type as ;'0' -- for AMG Solver ; or '1' for DIRECT SOLVER , under SOLVER_TYPE in cd2d.dat file " <<endl;
+    break;
+
+    default:
+        OutPut("Unknown Solver Type : " << SOLVER << endl);
+        OutPut( "Set the value of solver type as one of the following " <<endl << " '0' -- for AMG Solver ; or '1' for DIRECT SOLVER , under SOLVER_TYPE in cd2d.dat file " <<endl);
+        exit(4711);;
      }    
   }
 

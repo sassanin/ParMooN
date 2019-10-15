@@ -47,8 +47,8 @@
 // =======================================================================
 // include current example
 // =======================================================================
-#include "../Examples/CD_2D/Hemker.h" // circle in a channel
-// #include "../Examples/CD_2D/SineLaplace.h" // smooth sol in unitsquares
+// #include "../Examples/CD_2D/Hemker.h" // circle in a channel
+ #include "../Examples/CD_2D/TempDistribution.h" // smooth sol in unitsquares
 // #include "../Examples/CD_2D/TwoInteriorLayers.h" // smooth sol in unitsquares
 // #include "../Examples/CD_2D/furnace.h"  
 //#include "../Main_Users/Sashi/TCD_2D/Hemker.h"
@@ -162,8 +162,10 @@ int main(int argc, char* argv[])
   //======================================================================
   // SystemMatrix construction and solution
   //====================================================================== 
-  // Disc type: GALERKIN (or) SDFEM  (or) UPWIND (or) GLS (or) SUPG (or) LOCAL_PROJECTION
-  // Solver: AMG_SOLVE (or) GMG  (or) DIRECT 
+  // ##  Disc type: GALERKIN (or) SDFEM  (or) UPWIND (or) GLS (or) SUPG (or) LOCAL_PROJECTION
+  // ##  Solver: AMG_SOLVE  == 0  (or) DIRECT == 1 ,, 
+  // ##  Default value is set as 1 for SOLVER_TYPE on {parmoon_src_dir}/src/database.h
+
   Disctype = TDatabase::ParamDB->DISCTYPE;
   SystemMatrix = new TSystemCD2D(Scalar_FeSpace, Disctype, TDatabase::ParamDB->SOLVER_TYPE);
   

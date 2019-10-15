@@ -7,30 +7,39 @@
 # controlling the output messages
 set(CMAKE_VERBOSE_MAKEFILE FALSE)
 
+########## -- SELECT DIMENSION -- ##########
 # selection of dimension (2D 3D)
-set(AParMooN_GEO "3D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio of the problem")
-# set(AParMooN_GEO "3D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio of the problem")
- #...................................................................................................................................................
+set(AParMooN_GEO "2D" CACHE STRING "Change AParMooN_GEO, to select the Dimensio of the problem")
+
+
+########## -- SELECT MAIN PROGRAM -- ##########
+#...................................................................................................................................................
 # select this line accordingly to include your main program
-# set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/CD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
-# set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/TCD2D_ParMooN_ALE.C" CACHE STRING "Enter to select the Main file of the model") 
-set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/3DPrograms/HyperElastic3D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
-# set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/3DPrograms/RTE_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
-# set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/3DPrograms/TNSE3D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
+ set(AParMooN_MODEL "${PROJECT_SOURCE_DIR}/2DPrograms/CD2D_ParMooN.C" CACHE STRING "Enter to select the Main file of the model") 
 
+ 
+########## -- SELECT OUTPUT PATH -- ##########
 # set the path to save the exe file ....................................................................................
-set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/HyperElastic3D" CACHE STRING "select the model")
-# set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/tcd2d" CACHE STRING "select the model")
-# set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/ParMooN_Output/tnse3d" CACHE STRING "select the model")
+set(AParMooN_OUTPUT_DIR_PATH "${CMAKE_SOURCE_DIR}/../ParMooN_Output/CD2D" CACHE STRING "select the model")
 
+
+########## -- SELECT COMPILER TYPE -- ##########
 # selection of architect type (LINUX64 MAC64 INTEL64 TYRONE64 CRAY64)
-set(AParMooN_ARCH "LINUX64" CACHE STRING "select the machine type")
+set(AParMooN_ARCH "INTEL64" CACHE STRING "select the machine type")
 
+
+########## -- SELECT SEQUENTIAL/ PARALLEL -- ##########
 #  selection of program type (SEQUENTIAL SMPI MPI OMPONLY HYBRID)
 set(AParMooN_PARALLEL_TYPE "SEQUENTIAL" CACHE STRING "select the parallel type")
 
+
+########## -- SELECT PARALLELISATION TYPE -- ##########
 #  selection of program type (MPICH OPENMPI INTELMPI CRAYMPI MACMPI)
 set(AParMooN_MPI_IMPLEMENTATION "INTELMPI" CACHE STRING "select the MPI Implementation type")
+
+
+
+
 
 # set FALSE, if you want to use libs provided in PARMOON 
 # if you set TRUE, it will search in all you lib paths and if not found, PARMOON libs will be used

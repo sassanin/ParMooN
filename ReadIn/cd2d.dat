@@ -75,3 +75,9 @@ WRITE_VTK: 1
 SC_VERBOSE: 0
 SC_VERBOSE_AMG: 0
 CC_VERBOSE: 0
+-----------------------------------------------------------------------------------------------
+#   Solver type Selection 
+# 0  AMG_SOLVE   Algebraic Multi Grid Solver 
+# 1  DIRECT      Direct Solver which makes use of UMFPACK and LAPACK Solvers to Solve the system
+------------------------------------------------------------------------------------------------
+SOLVER_TYPE:0
