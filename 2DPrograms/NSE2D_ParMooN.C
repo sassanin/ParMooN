@@ -56,7 +56,8 @@
 // =======================================================================
 // include current example
 // =======================================================================
-#include "../Examples/NSE_2D/SinCos.h" // smooth sol in unit square
+//#include "../Examples/NSE_2D/DrivenCavity.h" // Lid Driven Cavity 
+#include "../Examples/NSE_2D/flow_past_cylinder.h" // Flow past cylinder using Gmsh
 // #include "../Examples/NSE_2D/Poiseuille.h" 
 // #include "../Examples/NSE_2D/Benchmark.h"
 // #include "../Examples/NSE_2D/Hemker_Wide.h"
@@ -103,16 +104,30 @@ int main(int argc, char* argv[])
   
   OpenFiles();
   OutFile.setf(std::ios::scientific);
-
   Database->CheckParameterConsistencyNSE();
   Database->WriteParamDB(argv[0]);
   ExampleFile();
   
   /* include the mesh from a meshgenerator, for a standard mesh use the build-in function */
   // standard mesh
-   GEO = TDatabase::ParamDB->GEOFILE;
-   Domain->Init(NULL, GEO);
-   
+  cout << " MESH TYPE :  " << TDatabase::ParamDB->MESH_TYPE << endl;
+   if(TDatabase::ParamDB->MESH_TYPE==0)
+   {
+    GEO = TDatabase::ParamDB->GEOFILE;
+    Domain->Init(NULL, GEO);
+   }
+     else if(TDatabase::ParamDB->MESH_TYPE==1)  
+     {
+         cout << " MESH - GMSH GEN " << endl;
+       Domain->GmshGen(TDatabase::ParamDB->GEOFILE); 
+       OutPut("GMSH used for meshing !!!" << endl);
+    }
+       else
+     {  
+      OutPut("Mesh Type not known, set MESH_TYPE correctly!!!" << endl);
+      exit(0);
+     } 
+     
     //  TriaReMeshGen(Domain);
    
   // refine grid up to the coarsest level
@@ -204,7 +219,7 @@ int main(int argc, char* argv[])
     // Solver: AMG_SOLVE (or) GMG  (or) DIRECT
     NSEType = TDatabase::ParamDB->NSTYPE;
     
-    SystemMatrix = new TSystemNSE2D(Velocity_FeSpace, Pressure_FeSpace, Velocity, Pressure, sol, rhs, GALERKIN, NSEType, DIRECT, NULL,NULL,NULL);
+    SystemMatrix = new TSystemNSE2D(Velocity_FeSpace, Pressure_FeSpace, Velocity, Pressure, sol, rhs, GALERKIN, NSEType, DIRECT);
  
     // initilize the system matrix with the functions defined in Example file
     //last two arguments is aux that is used to pass additional fe functions (eg. mesh velocity)

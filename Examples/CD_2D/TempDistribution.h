@@ -36,17 +36,18 @@ void Exact(double x, double y, double *values)
 // kind of boundary condition (for FE space needed)
 void BoundCondition(int BdComp, double t, BoundCond &cond)
 {
+ 
+    
     cond = DIRICHLET;
 }
 
 // value of boundary condition
 void BoundValue(int BdComp, double Param, double &value)
 {
-    if(BdComp==1 )
-    value = 1;
-  else
-    value = 0;
+   
+    value =0;
 }
+
 
 void BilinearCoeffs(int n_points, double *x, double *y,
         double **parameters, double **coeffs)
@@ -61,11 +62,11 @@ void BilinearCoeffs(int n_points, double *x, double *y,
     //double *param = parameters[i];
 
     coeff[0] = eps;  // eps
-    coeff[1] =1 ;  // b1
+    coeff[1] = 1;  // b1
     coeff[2] = 1; // b2
-    coeff[3] = 1; // c - reactoin
+    coeff[3] = 0; // c - reactoin
 
-    coeff[4] = 0; // // force
+    coeff[4] = 1; // // force
   }
 }
 

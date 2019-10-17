@@ -1233,8 +1233,9 @@ int TDomain::GmshGen(char *GeoFile)
    //since Bd PRM is not set, IsoBD will be treated as BD during refinement
    if(UsePRM==0)
     {
-   cerr <<   "PRM file is must to use Gmsh " <<  endl;
-   exit(-1);        
+        // cOMMENTED OUT BY THIVIN 
+   //cerr <<   "PRM file is must to use Gmsh " <<  endl;
+   //exit(-1);        
       
      BdParts = new TBoundPart*[1]; // assumed that only one BdPart is used in Gmsh
      BdParts[0] = new TBoundPart(N_BdComp);
