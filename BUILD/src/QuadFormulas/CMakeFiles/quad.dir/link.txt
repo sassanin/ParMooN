@@ -1,0 +1,2 @@
+/usr/bin/ar qc /home/thivin/PARMOON_CODES/PARMOON_GIT_DEMO/ParMooN_Output/NSE2D/lib/libquad.a  CMakeFiles/quad.dir/QuadFormula.C.o CMakeFiles/quad.dir/QuadFormula1D.C.o CMakeFiles/quad.dir/QuadFormula2D.C.o CMakeFiles/quad.dir/QuadFormula3D.C.o CMakeFiles/quad.dir/QuadFormulaHexa.C.o CMakeFiles/quad.dir/QuadFormulaQuad.C.o CMakeFiles/quad.dir/QuadFormulaTetra.C.o CMakeFiles/quad.dir/QuadFormulaTria.C.o
+/usr/bin/ranlib /home/thivin/PARMOON_CODES/PARMOON_GIT_DEMO/ParMooN_Output/NSE2D/lib/libquad.a

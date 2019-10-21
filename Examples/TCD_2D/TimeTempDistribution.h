@@ -60,7 +60,7 @@ void InitialCondition(double x, double y, double *values)
 {
   double t;
 
-  t = TDatabase::TimeDB->CURRENTTIME;
+ // t = TDatabase::TimeDB->CURRENTTIME;
   values[0] = 0;
 }
 
